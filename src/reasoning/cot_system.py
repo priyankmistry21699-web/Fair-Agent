@@ -59,7 +59,9 @@ class MedicalReasoningTemplate:
                 "First, I'll consider the most common causes of {symptom}:",
                 "Next, I'll evaluate any potential red flags or serious conditions:",
                 "I should also consider your individual risk factors:",
+                "Then, I'll examine relevant medical evidence and guidelines:",
                 "Based on this analysis, here are the general recommendations:",
+                "I'll also discuss when immediate medical attention is needed:",
                 "However, I must emphasize the importance of professional medical evaluation:"
             ]
         
@@ -70,6 +72,8 @@ class MedicalReasoningTemplate:
                 "Next, I'll discuss the typical uses and benefits:",
                 "Now, let me address potential side effects and risks:",
                 "I should also mention important interactions and precautions:",
+                "Then, I'll review evidence supporting this treatment:",
+                "I'll also cover proper usage and monitoring requirements:",
                 "Finally, I must emphasize the importance of medical supervision:"
             ]
         
@@ -108,6 +112,8 @@ class FinancialReasoningTemplate:
                 "Next, I'll evaluate the specific investment options:",
                 "Then, I'll discuss diversification and risk management:",
                 "I should also address potential returns and volatility:",
+                "Now, let me examine historical performance data:",
+                "I'll also cover tax implications and fees:",
                 "Finally, I must remind you about the importance of professional advice:"
             ]
         

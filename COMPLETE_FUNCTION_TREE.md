@@ -1,9 +1,11 @@
 # 🌳 FAIR-Agent Complete Function Tree
+
 ## From Start to End - Complete Execution Flow
 
 ---
 
 # 📋 Table of Contents
+
 1. [System Startup Flow](#1-system-startup-flow)
 2. [Query Processing Flow](#2-query-processing-flow)
 3. [Baseline Calculation Flow](#3-baseline-calculation-flow)
@@ -153,7 +155,7 @@ USER QUERY: "What is the best investment strategy for retirement?"
         │               │   └─► _classify_query_domain(query) [Line 124]
         │               │       │
         │               │       ├─► Finance Keywords Check:
-        │               │       │   finance_keywords = ['investment', 'portfolio', 'stock', 
+        │               │       │   finance_keywords = ['investment', 'portfolio', 'stock',
         │               │       │                       'bond', 'retirement', 'savings', ...]
         │               │       │   finance_score = count(keyword in query.lower())
         │               │       │
@@ -218,13 +220,13 @@ USER QUERY: "What is the best investment strategy for retirement?"
         │               │               │       └─► Build prompt:
         │               │               │           """You are a financial expert. Use ONLY these sources:
         │               │               │           {evidence_text}
-        │               │               │           
+        │               │               │
         │               │               │           CRITICAL INSTRUCTIONS:
         │               │               │           1. ✅ Base answer ONLY on evidence sources
         │               │               │           2. ✅ Cite sources [Source X]
         │               │               │           3. ✅ Use step-by-step reasoning
         │               │               │           4. ✅ Express uncertainty where limited
-        │               │               │           
+        │               │               │
         │               │               │           Question: {question}
         │               │               │           """
         │               │               │
@@ -829,6 +831,7 @@ DIRECT API CALL: FairAgentEvaluator.run_comprehensive_benchmark(queries)
 ## 5.1 Core Components
 
 ### Orchestrator (`src/agents/orchestrator.py`)
+
 ```
 Orchestrator
 ├─► __init__(finance_config, medical_config)
@@ -846,6 +849,7 @@ Orchestrator
 ```
 
 ### Finance Agent (`src/agents/finance_agent.py`)
+
 ```
 FinanceAgent
 ├─► __init__(model_name, device, max_length)
@@ -875,6 +879,7 @@ FinanceAgent
 ```
 
 ### RAG System (`src/evidence/rag_system.py`)
+
 ```
 RAGSystem
 ├─► __init__()
@@ -899,6 +904,7 @@ RAGSystem
 ```
 
 ### Baseline Evaluator (`src/evaluation/baseline_evaluator.py`)
+
 ```
 BaselineEvaluator
 ├─► __init__()
@@ -929,6 +935,7 @@ BaselineEvaluator
 ```
 
 ### Comprehensive Evaluator (`src/evaluation/comprehensive_evaluator.py`)
+
 ```
 FairAgentEvaluator
 ├─► __init__(baseline_file)
@@ -961,6 +968,7 @@ FairAgentEvaluator
 ## 5.2 Enhancement Systems
 
 ### Safety System (`src/safety/disclaimer_system.py`)
+
 ```
 ResponseEnhancer
 ├─► enhance_response(response, query, domain)
@@ -973,6 +981,7 @@ ResponseEnhancer
 ```
 
 ### Chain-of-Thought (`src/reasoning/cot_system.py`)
+
 ```
 ChainOfThoughtIntegrator
 ├─► enhance_response_with_reasoning(response, query, domain)
@@ -983,6 +992,7 @@ ChainOfThoughtIntegrator
 ```
 
 ### Internet RAG (`src/data_sources/internet_rag.py`)
+
 ```
 InternetRAGSystem
 ├─► enhance_finance_response(query, base_response)
@@ -997,6 +1007,7 @@ InternetRAGSystem
 ## 5.3 Evaluation Modules
 
 ### Faithfulness Evaluator (`src/evaluation/faithfulness.py`)
+
 ```
 FaithfulnessEvaluator
 └─► evaluate_response(response, query, ground_truth=None)
@@ -1007,6 +1018,7 @@ FaithfulnessEvaluator
 ```
 
 ### Adaptability Evaluator (`src/evaluation/adaptability.py`)
+
 ```
 AdaptabilityEvaluator
 └─► evaluate_adaptability(response, query, domain, context)
@@ -1017,6 +1029,7 @@ AdaptabilityEvaluator
 ```
 
 ### Interpretability Evaluator (`src/evaluation/interpretability.py`)
+
 ```
 InterpretabilityEvaluator
 └─► evaluate_interpretability(response, query, domain)
@@ -1027,6 +1040,7 @@ InterpretabilityEvaluator
 ```
 
 ### Safety Evaluator (`src/evaluation/safety.py`)
+
 ```
 SafetyEvaluator
 └─► evaluate_safety(response, query, domain)
@@ -1041,6 +1055,7 @@ SafetyEvaluator
 ## 5.4 Utility Functions
 
 ### Ollama Client (`src/utils/ollama_client.py`)
+
 ```
 OllamaClient
 ├─► is_available()
@@ -1057,6 +1072,7 @@ OllamaClient
 ```
 
 ### Model Registry (`src/core/model_manager.py`)
+
 ```
 ModelRegistry
 ├─► get_default_model()
@@ -1076,11 +1092,13 @@ ModelRegistry
 # 📊 Summary Statistics
 
 ## Function Call Depth
+
 - **Maximum Call Depth**: 12 levels (User Query → Django → Service → Orchestrator → Agent → RAG → Evidence → Embedding → Similarity)
 - **Average Response Time**: 2-4 seconds per query
 - **LLM Calls per Query**: 1 (base) + 0-3 (enhancements) = 1-4 total
 
 ## Key Metrics
+
 - **Total Functions**: ~150 across all modules
 - **Core Agents**: 2 (Finance, Medical)
 - **Enhancement Systems**: 4 (RAG, Internet RAG, Safety, CoT)
@@ -1089,6 +1107,7 @@ ModelRegistry
 - **Evidence Sources**: 35 curated + 18 dataset sources
 
 ## Performance Targets
+
 - **Faithfulness**: ≥20% improvement over baseline
 - **Hallucination Reduction**: ≥30% improvement
 - **Calibration Error (ECE)**: <0.1

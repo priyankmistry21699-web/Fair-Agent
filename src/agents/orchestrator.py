@@ -131,24 +131,125 @@ class Orchestrator:
         """
         query_lower = query.lower()
         
-        # Define domain keywords
+        # Define comprehensive domain keywords
         finance_keywords = [
-            'financial', 'finance', 'money', 'investment', 'portfolio', 'stock',
-            'market', 'revenue', 'profit', 'loss', 'budget', 'cost', 'price',
-            'earnings', 'dividend', 'bond', 'asset', 'liability', 'cash flow',
-            'roi', 'return on investment', 'valuation', 'financial statement'
+            # Core finance terms
+            'financial', 'finance', 'money', 'investment', 'portfolio', 'stock', 'stocks',
+            'market', 'revenue', 'profit', 'loss', 'budget', 'cost', 'price', 'pricing',
+            'earnings', 'dividend', 'dividends', 'bond', 'bonds', 'asset', 'assets', 
+            'liability', 'liabilities', 'cash flow', 'cashflow', 'roi', 'return on investment',
+            'valuation', 'financial statement', 'balance sheet', 'income statement',
+            
+            # Investment & trading
+            'equity', 'equities', 'share', 'shares', 'trading', 'trader', 'broker', 'brokerage',
+            'mutual fund', 'etf', 'index fund', 'hedge fund', 'private equity', 'venture capital',
+            'ipo', 'initial public offering', 'derivatives', 'options', 'futures', 'commodities',
+            'forex', 'currency', 'exchange', 'nasdaq', 'dow jones', 's&p 500', 'crypto', 'cryptocurrency',
+            'bitcoin', 'ethereum', 'blockchain', 'defi', 'bull market', 'bear market',
+            
+            # Banking & credit
+            'bank', 'banking', 'loan', 'loans', 'mortgage', 'credit', 'debt', 'interest', 'interest rate',
+            'apr', 'apy', 'savings', 'checking', 'deposit', 'withdrawal', 'overdraft',
+            'credit card', 'debit card', 'credit score', 'fico', 'refinance', 'refinancing',
+            
+            # Corporate finance
+            'merger', 'acquisition', 'takeover', 'ipo', 'capital', 'equity financing', 'debt financing',
+            'venture', 'startup funding', 'series a', 'series b', 'valuation', 'enterprise value',
+            'ebitda', 'eps', 'pe ratio', 'market cap', 'shareholder', 'stakeholder',
+            
+            # Personal finance
+            'retirement', 'pension', '401k', 'ira', 'roth ira', 'annuity', 'life insurance',
+            'estate planning', 'tax', 'taxes', 'taxation', 'deduction', 'refund', 'filing',
+            'wealth', 'net worth', 'financial planning', 'financial advisor', 'fiduciary',
+            
+            # Accounting & reporting
+            'accounting', 'accountant', 'audit', 'auditor', 'gaap', 'ifrs', 'depreciation',
+            'amortization', 'accrual', 'expense', 'expenses', 'expenditure', 'capex', 'opex',
+            'gross margin', 'net income', 'operating income', 'cash position', 'liquidity',
+            
+            # Economic terms
+            'economy', 'economic', 'gdp', 'inflation', 'deflation', 'recession', 'depression',
+            'fiscal', 'monetary', 'federal reserve', 'fed', 'central bank', 'quantitative easing',
+            'supply chain', 'trade', 'tariff', 'import', 'export', 'currency devaluation',
+            
+            # Risk & insurance
+            'risk', 'risk management', 'hedge', 'hedging', 'insurance', 'premium', 'deductible',
+            'coverage', 'claim', 'underwriting', 'actuarial', 'volatility', 'var', 'value at risk',
+            
+            # Real estate
+            'real estate', 'property', 'reit', 'rental', 'lease', 'landlord', 'tenant',
+            'appraisal', 'closing', 'escrow', 'title', 'foreclosure', 'equity line'
         ]
         
         medical_keywords = [
-            'medical', 'health', 'disease', 'symptom', 'treatment', 'diagnosis',
-            'patient', 'clinical', 'drug', 'medication', 'therapy', 'hospital',
-            'doctor', 'physician', 'nurse', 'surgery', 'cancer', 'diabetes', 'diabetic', 'diabetics',
-            'blood', 'heart', 'brain', 'infection', 'virus', 'bacteria',
-            'pharmaceutical', 'biomedical', 'pathology', 'anatomy', 'condition',
-            'illness', 'syndrome', 'disorder', 'chronic', 'acute', 'pain',
-            'fever', 'headache', 'medicine', 'vaccine', 'immunization',
-            'hypertension', 'cholesterol', 'obesity', 'depression', 'anxiety',
-            'asthma', 'arthritis', 'allergies', 'pneumonia', 'flu', 'covid'
+            # Core medical terms
+            'medical', 'medicine', 'health', 'healthcare', 'disease', 'diseases', 'symptom', 'symptoms',
+            'treatment', 'treatments', 'diagnosis', 'diagnose', 'diagnostic', 'prognosis',
+            'patient', 'patients', 'clinical', 'clinic', 'hospital', 'emergency room', 'er', 'icu',
+            
+            # Medical professionals
+            'doctor', 'doctors', 'physician', 'physicians', 'surgeon', 'nurse', 'nurses',
+            'practitioner', 'specialist', 'cardiologist', 'oncologist', 'neurologist', 'dermatologist',
+            'pediatrician', 'psychiatrist', 'psychologist', 'therapist', 'radiologist', 'anesthesiologist',
+            'obstetrician', 'gynecologist', 'urologist', 'ophthalmologist', 'dentist', 'orthodontist',
+            
+            # Medications & drugs
+            'drug', 'drugs', 'medication', 'medications', 'prescription', 'prescribe', 'dosage', 'dose',
+            'pharmaceutical', 'pharmacy', 'pharmacist', 'antibiotic', 'antibiotics', 'antiviral',
+            'painkiller', 'analgesic', 'anti-inflammatory', 'steroid', 'insulin', 'inhaler',
+            'chemotherapy', 'chemo', 'radiation therapy', 'immunotherapy', 'biologics',
+            
+            # Procedures & treatments
+            'surgery', 'surgical', 'operation', 'procedure', 'therapy', 'rehabilitation', 'rehab',
+            'physical therapy', 'occupational therapy', 'counseling', 'psychotherapy',
+            'transplant', 'implant', 'biopsy', 'scan', 'mri', 'ct scan', 'x-ray', 'ultrasound',
+            'endoscopy', 'colonoscopy', 'mammogram', 'blood test', 'lab test', 'screening',
+            
+            # Body systems & organs
+            'heart', 'cardiac', 'cardiovascular', 'lung', 'pulmonary', 'respiratory',
+            'brain', 'neurological', 'liver', 'hepatic', 'kidney', 'renal', 'digestive',
+            'gastrointestinal', 'stomach', 'intestine', 'colon', 'pancreas', 'spleen',
+            'blood', 'vascular', 'artery', 'vein', 'bone', 'skeletal', 'muscle', 'muscular',
+            'skin', 'dermatology', 'eye', 'vision', 'ear', 'hearing', 'throat', 'nose',
+            
+            # Common diseases & conditions
+            'diabetes', 'diabetic', 'diabetics', 'type 1', 'type 2', 'cancer', 'tumor', 'malignant',
+            'hypertension', 'high blood pressure', 'hypotension', 'cholesterol', 'ldl', 'hdl',
+            'obesity', 'overweight', 'bmi', 'heart disease', 'coronary', 'stroke', 'heart attack',
+            'asthma', 'copd', 'emphysema', 'bronchitis', 'pneumonia', 'tuberculosis', 'tb',
+            'arthritis', 'rheumatoid', 'osteoarthritis', 'osteoporosis', 'fracture', 'sprain',
+            'alzheimers', 'dementia', 'parkinsons', 'epilepsy', 'seizure', 'migraine', 'headache',
+            
+            # Mental health
+            'depression', 'depressed', 'anxiety', 'anxious', 'panic attack', 'ptsd', 'ocd',
+            'bipolar', 'schizophrenia', 'adhd', 'autism', 'eating disorder', 'anorexia', 'bulimia',
+            'addiction', 'substance abuse', 'alcoholism', 'mental health', 'psychological',
+            
+            # Infectious diseases
+            'infection', 'infectious', 'virus', 'viral', 'bacteria', 'bacterial', 'fungal', 'parasite',
+            'flu', 'influenza', 'covid', 'coronavirus', 'sars', 'hiv', 'aids', 'hepatitis',
+            'herpes', 'measles', 'mumps', 'chickenpox', 'malaria', 'dengue', 'zika',
+            'vaccine', 'vaccination', 'immunization', 'immunize', 'booster', 'shot',
+            
+            # Symptoms & signs
+            'pain', 'ache', 'sore', 'fever', 'temperature', 'cough', 'coughing', 'sneeze',
+            'nausea', 'vomiting', 'diarrhea', 'constipation', 'fatigue', 'tired', 'weakness',
+            'dizziness', 'vertigo', 'numbness', 'tingling', 'swelling', 'inflammation',
+            'rash', 'itch', 'bleeding', 'bruising', 'lesion', 'wound', 'injury',
+            
+            # Specialties & fields
+            'pathology', 'anatomy', 'physiology', 'immunology', 'genetics', 'genomics',
+            'biomedical', 'epidemiology', 'public health', 'preventive medicine', 'geriatrics',
+            'pediatrics', 'obstetrics', 'gynecology', 'urology', 'nephrology', 'endocrinology',
+            
+            # Medical terminology
+            'syndrome', 'disorder', 'condition', 'illness', 'chronic', 'acute', 'benign',
+            'diagnosis', 'misdiagnosis', 'complication', 'side effect', 'adverse reaction',
+            'contraindication', 'remission', 'relapse', 'recovery', 'mortality', 'morbidity',
+            
+            # Allergies & immune
+            'allergy', 'allergies', 'allergic', 'anaphylaxis', 'immune', 'immunity', 'autoimmune',
+            'histamine', 'pollen', 'gluten', 'lactose', 'intolerance', 'sensitivity'
         ]
         
         # Special case: single word "medicine" should strongly indicate medical domain

@@ -19,6 +19,9 @@ class ResponseFormatter:
         # Clean up the text first
         formatted = text.strip()
         
+        # Handle markdown links [text](url) - MUST BE DONE BEFORE bold/italic to preserve []
+        formatted = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2" target="_blank" style="color: #0066cc; text-decoration: underline;">\1</a>', formatted)
+        
         # Handle bold text with ** (if present)
         formatted = re.sub(r'\*\*([^*]+?)\*\*', r'<strong>\1</strong>', formatted)
         

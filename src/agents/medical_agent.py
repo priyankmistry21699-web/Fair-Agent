@@ -22,6 +22,7 @@ try:
     from ..reasoning.cot_system import ChainOfThoughtIntegrator
     from ..data_sources.internet_rag import InternetRAGSystem
     from ..utils.ollama_client import OllamaClient
+    from ..validation.answer_validator import AnswerValidator
 except ImportError:
     # Fallback to sys.path method if relative imports fail
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'safety'))
@@ -29,11 +30,13 @@ except ImportError:
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'reasoning'))
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'data_sources'))
     sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'utils'))
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'validation'))
     from disclaimer_system import ResponseEnhancer
     from rag_system import RAGSystem
     from cot_system import ChainOfThoughtIntegrator
     from internet_rag import InternetRAGSystem
-    from ollama_client import OllamaClient 
+    from ollama_client import OllamaClient
+    from answer_validator import AnswerValidator 
 
 @dataclass
 class MedicalResponse:
@@ -90,6 +93,9 @@ class MedicalAgent:
         if not self.ollama_client.is_available():
             raise RuntimeError("Ollama is required but not available. Please start Ollama service.")
         
+        # Initialize answer validator
+        self.answer_validator = AnswerValidator()
+        
         self.logger.info(f"✅ Medical Agent using Ollama model: {self.model_name}")
     
     def query(
@@ -114,20 +120,38 @@ class MedicalAgent:
             if safety_check and self._is_harmful_query(question):
                 return self._safe_response("Query requires professional medical consultation")
             
-            # Step 1: RETRIEVE EVIDENCE FIRST (NEW - boosts faithfulness)
+            # Step 1: RETRIEVE EVIDENCE FIRST - PARALLEL (YAML + Internet)
             evidence_sources = []
+            internet_sources_early = []
+            
+            # 1A: Get YAML sources
             if hasattr(self, 'rag_system'):
                 try:
-                    evidence_sources = self.rag_system.retrieve_evidence(
+                    evidence_sources = RAGSystem().retrieve_evidence(
                         query=question,
                         domain="medical",
-                        top_k=3
+                        top_k=8  # INCREASED to 8 for top 10 total (8 YAML + 2-3 Internet)
                     )
-                    self.logger.info(f"✅ Retrieved {len(evidence_sources)} medical evidence sources")
+                    self.logger.info(f"✅ Retrieved {len(evidence_sources)} YAML medical evidence sources")
                 except Exception as e:
                     self.logger.warning(f"Evidence retrieval failed: {e}")
             
-            # Step 2: Construct prompt WITH EVIDENCE (NEW - forces citations)
+            # 1B: Get Internet sources EARLY (before prompt construction)
+            if hasattr(self, 'internet_rag'):
+                try:
+                    concepts = self.internet_rag._extract_medical_concepts(question)
+                    for concept in concepts[:3]:  # Top 3 concepts for more coverage
+                        sources = self.internet_rag._fetch_medical_concept_info(concept)
+                        internet_sources_early.extend(sources[:1])  # 1 per concept = ~3 Internet sources
+                    if internet_sources_early:
+                        self.logger.info(f"✅ Retrieved {len(internet_sources_early)} Internet medical sources EARLY for prompt")
+                        self.logger.info(f"📚 TOTAL SOURCES FOR LLM: {len(evidence_sources) + len(internet_sources_early)} (YAML + Internet)")
+                        # Merge Internet sources with YAML for prompt construction
+                        evidence_sources.extend(internet_sources_early)
+                except Exception as e:
+                    self.logger.warning(f"Early Internet retrieval failed: {e}")
+            
+            # Step 2: Construct prompt WITH ALL EVIDENCE (YAML + Internet)
             prompt = self._construct_prompt_with_evidence(question, evidence_sources, context)
             
             # Step 3: Generate response using Ollama
@@ -148,18 +172,42 @@ class MedicalAgent:
                 self.logger.warning("Ollama generated response too short")
             
             # Step 4: Enhance response using full system integration
-            enhanced_answer, internet_source_count = self._enhance_with_systems(question, base_answer)
+            enhanced_answer, internet_source_count, merged_sources = self._enhance_with_systems(question, base_answer)
+            
+            # Merge internet sources with YAML evidence sources
+            if merged_sources:
+                evidence_sources = merged_sources  # Use merged sources (YAML + Internet)
+                self.logger.info(f"📚 Using {len(evidence_sources)} total sources for final answer (YAML + Internet)")
+            
+            # Step 4.5: NEW - Validate response quality and safety
+            validation_result = self.answer_validator.validate_response(
+                answer=enhanced_answer,
+                question=question,
+                domain="medical",
+                evidence_sources=evidence_sources
+            )
+            
+            # Apply automatic corrections if needed
+            if not validation_result.is_valid or validation_result.corrections:
+                enhanced_answer = self.answer_validator.apply_corrections(
+                    enhanced_answer, validation_result
+                )
+                self.logger.info(
+                    f"Validation: quality={validation_result.quality_score:.2f}, "
+                    f"conf_adj={validation_result.confidence_adjustment:.2f}"
+                )
             
             # Step 5: Add structured format (deduplication handled in method)
             enhanced_answer = self._add_structured_format(enhanced_answer, evidence_sources)
             enhanced_answer = self._add_medical_disclaimer(enhanced_answer)
             
-            # Step 6: Parse and structure the enhanced response
+            # Step 6: Parse and structure the enhanced response (pass validation for confidence adj)
             structured_response = self._parse_medical_response(
                 enhanced_answer, 
                 question,
                 safety_check,
-                internet_source_count
+                internet_source_count,
+                validation_result=validation_result
             )
             
             return structured_response
@@ -311,10 +359,25 @@ Please provide detailed medical information about this topic:"""
         context: Optional[Dict] = None
     ) -> str:
         """
-        Construct evidence-based prompt for better faithfulness scores
+        Construct evidence-based prompt with few-shot examples for better faithfulness
         
-        NEW METHOD - Forces model to use evidence and cite sources
+        NEW ENHANCED METHOD - Forces model to use evidence and cite sources with examples
         """
+        # Few-shot examples for medical domain
+        few_shot_examples = """
+=== EXAMPLE INTERACTION 1 ===
+Question: What are the common side effects of aspirin?
+Evidence: [Source 1] Aspirin commonly causes stomach irritation, heartburn, and increased bleeding risk.
+Answer: Aspirin has several common side effects that users should be aware of. The most frequent include stomach irritation and heartburn, which occur because aspirin can irritate the stomach lining [Source 1]. Additionally, aspirin increases bleeding risk because it inhibits platelet function [Source 1]. These side effects vary in severity between individuals, and anyone experiencing severe symptoms should consult their healthcare provider immediately.
+
+=== EXAMPLE INTERACTION 2 ===
+Question: How does diabetes affect the body?
+Evidence: [Source 1] Diabetes causes elevated blood glucose levels that damage blood vessels and nerves over time.
+Answer: Diabetes affects the body by causing persistently elevated blood glucose levels [Source 1]. Over time, these high glucose levels damage blood vessels throughout the body, which can lead to complications in the eyes, kidneys, and cardiovascular system [Source 1]. Additionally, diabetes damages nerves, particularly in the extremities, leading to diabetic neuropathy [Source 1]. Proper management through medication, diet, and lifestyle modifications is essential to minimize these complications.
+
+=== YOUR TASK ===
+"""
+        
         # Format evidence sources for prompt
         evidence_text = ""
         if evidence_sources and hasattr(self, 'rag_system'):
@@ -359,12 +422,146 @@ Begin your answer:
         
         return prompt
     
+    def _synthesize_final_answer(self, response: str, evidence_sources: List = None) -> str:
+        """
+        Extract and synthesize a concise final answer from the detailed medical analysis
+        
+        NEW METHOD - Creates a standalone medical summary that appears after reasoning steps
+        UPDATED: Now extracts actual URLs from evidence sources for clickable links
+        """
+        if not response:
+            return ""
+        
+        # Extract key findings from Steps
+        step_pattern = r'\*\*Step \d+:.*?\*\*(.*?)(?=\*\*Step \d+:|References:|📚|---|\Z)'
+        steps = re.findall(step_pattern, response, re.DOTALL | re.IGNORECASE)
+        
+        # Look for conclusion/summary sections
+        conclusion_patterns = [
+            r'(?:Step 4:|Conclusion|Summary|In summary|Key points?):?\s*(.*?)(?=\n\n\*\*|References:|📚|---|\Z)',
+            r'(?:Treatment|Management|Recommendations?):?\s*(.*?)(?=\n\n\*\*|References:|📚|---|\Z)',
+        ]
+        
+        conclusion_text = ""
+        for pattern in conclusion_patterns:
+            match = re.search(pattern, response, re.DOTALL | re.IGNORECASE)
+            if match:
+                conclusion_text = match.group(1).strip()
+                break
+        
+        # If no explicit conclusion, extract from last step
+        if not conclusion_text and steps:
+            conclusion_text = steps[-1].strip()
+        
+        # Extract cited sources and match with evidence_sources to get URLs
+        # Match both [Source X] in text AND **[Source X]** in evidence headers
+        cited_sources = re.findall(r'\[Source (\d+)\]', response)
+        unique_source_nums = sorted(set(int(num) for num in cited_sources))
+        
+        self.logger.info(f"🏥 MEDICAL SUMMARY: Found {len(unique_source_nums)} cited sources in text: {unique_source_nums}")
+        self.logger.info(f"🏥 Evidence sources available: {len(evidence_sources) if evidence_sources else 0}")
+        
+        # ALWAYS show ALL evidence sources in MEDICAL SUMMARY
+        # This ensures users see all 10 sources even if LLM only cited 1-2
+        if evidence_sources and len(evidence_sources) > len(unique_source_nums):
+            self.logger.info(f"🏥 LLM cited {len(unique_source_nums)} sources, but {len(evidence_sources)} total available")
+            self.logger.info(f"🏥 OVERRIDE: Including ALL {len(evidence_sources)} sources in MEDICAL SUMMARY for transparency")
+            unique_source_nums = list(range(1, len(evidence_sources) + 1))
+        elif not unique_source_nums and evidence_sources:
+            self.logger.info(f"🏥 No explicit [Source X] citations found in response text")
+            self.logger.info(f"🏥 Including all {len(evidence_sources)} evidence sources in MEDICAL SUMMARY")
+            unique_source_nums = list(range(1, len(evidence_sources) + 1))
+        
+        # Build source details with actual URLs from evidence_sources
+        source_details = []
+        for source_num in unique_source_nums:
+            # Try to get actual source from evidence_sources list
+            source_url = None
+            source_name = 'Trusted Medical Database'
+            reliability = 'N/A'
+            
+            if evidence_sources and len(evidence_sources) >= source_num:
+                try:
+                    source_obj = evidence_sources[source_num - 1]  # 0-indexed
+                    if hasattr(source_obj, 'url') and source_obj.url:
+                        source_url = source_obj.url
+                        self.logger.info(f"✅ Source {source_num} URL extracted: {source_url}")
+                    else:
+                        self.logger.warning(f"⚠️ Source {source_num} has no URL attribute or URL is None")
+                    if hasattr(source_obj, 'title') and source_obj.title:
+                        source_name = source_obj.title
+                    if hasattr(source_obj, 'reliability_score'):
+                        reliability = f"{int(source_obj.reliability_score * 100)}"
+                except (IndexError, AttributeError) as e:
+                    self.logger.warning(f"❌ Error extracting Source {source_num}: {e}")
+            else:
+                self.logger.warning(f"⚠️ Source {source_num} not found in evidence_sources (only {len(evidence_sources) if evidence_sources else 0} available)")
+            
+            # Fallback: Try to extract from response text
+            if not source_url or reliability == 'N/A':
+                source_pattern = rf'\*\*\[Source {source_num}\]\*\*.*?\(Reliability: (\d+)%\).*?\*Source: ([^*]+)\*'
+                match = re.search(source_pattern, response, re.DOTALL)
+                if match:
+                    if reliability == 'N/A':
+                        reliability = match.group(1)
+                    source_name = match.group(2).strip()
+            
+            source_details.append((source_num, reliability, source_name, source_url))
+        
+        # Build synthesized medical summary
+        synthesis = "\n\n---\n\n## 🏥 **MEDICAL SUMMARY**\n\n"
+        
+        if conclusion_text:
+            # Clean up the conclusion text
+            cleaned = conclusion_text.replace('\n\n', ' ').strip()
+            # Limit to reasonable length
+            if len(cleaned) > 600:
+                sentences = re.split(r'(?<=[.!?])\s+', cleaned)
+                cleaned = ' '.join(sentences[:3])  # Take first 3 sentences
+            
+            synthesis += f"{cleaned}\n\n"
+        
+        # Add detailed source attribution with clickable hyperlinks
+        if source_details:
+            synthesis += f"**🔬 Clinical Evidence Sources ({len(source_details)} trusted medical sources):**\n\n"
+            for source_num, reliability, source_name, source_url in source_details:
+                # Determine source origin from evidence_sources
+                source_origin = "📚 Curated"
+                if evidence_sources and len(evidence_sources) >= source_num:
+                    source_obj = evidence_sources[source_num - 1]
+                    # Check if it's an InternetSource
+                    if hasattr(source_obj, '__class__') and source_obj.__class__.__name__ == 'InternetSource':
+                        source_origin = "🌐 Internet"
+                
+                # Create clickable hyperlink if URL is available
+                if source_url:
+                    # Format: • Source 1: [Title](URL) - Origin - Reliability: XX%
+                    synthesis += f"• Source {source_num}: [{source_name}]({source_url}) - {source_origin}"
+                else:
+                    synthesis += f"• Source {source_num}: {source_name} - {source_origin}"
+                
+                if reliability != 'N/A':
+                    synthesis += f" - Reliability: {reliability}%"  
+                synthesis += "\n"
+            
+            synthesis += "\n💡 Click on source titles above to access the full medical literature or database reference.\n\n"
+        
+        # Add critical medical action items
+        synthesis += "**Important Next Steps:**\n"
+        synthesis += "- ⚠️ **Consult a healthcare professional** for diagnosis and personalized treatment\n"
+        synthesis += "- 📋 Review the detailed medical analysis and evidence above\n"
+        synthesis += "- 🚨 Seek immediate medical attention for emergency symptoms\n"
+        synthesis += "- 📝 Discuss any concerns or questions with your doctor\n"
+        synthesis += "- 💊 Never start, stop, or change medications without medical supervision\n"
+        
+        return synthesis
+    
     def _add_structured_format(self, response: str, evidence_sources: List) -> str:
         """
         Ensure response follows structured format for interpretability
         
         NEW METHOD - Boosts interpretability scores
-        UPDATED: Evidence now appears at the TOP of the response
+        UPDATED: Now includes synthesized medical summary after reasoning steps
         """
         if not response:
             return response
@@ -373,24 +570,43 @@ Begin your answer:
         has_steps = bool(re.search(r'(\*\*Step \d+|\bStep \d+:|First,|Next,|Then,|Finally,)', response, re.I))
         has_citations = bool(re.search(r'\[Source \d+\]', response))
         has_evidence_section = bool(re.search(r'(Evidence-Based Information|References:|Evidence Sources)', response, re.I))
+        has_medical_summary = bool(re.search(r'(MEDICAL SUMMARY|Clinical Summary|Summary)', response, re.I))
         
-        # If already well-structured with evidence, return as-is
-        if has_steps and has_citations and has_evidence_section:
-            self.logger.info("✅ Response already well-structured")
+        # If already well-structured with everything, return as-is
+        if has_steps and has_citations and has_evidence_section and has_medical_summary:
+            self.logger.info("✅ Response already well-structured with medical summary")
             return response
         
-        # Build evidence section FIRST (at the top)
+        # Build evidence section FIRST (at the top) with clickable URLs
         evidence_header = ""
         if not has_citations and not has_evidence_section and evidence_sources:
             evidence_header = "**📚 Evidence-Based Information:**\n\n"
             for i, source in enumerate(evidence_sources, 1):
-                evidence_header += f"**[Source {i}]** {source.title}\n"
+                # Determine if source is from Internet or YAML/Dataset
+                # Internet sources have class name 'InternetSource'
+                is_internet = False
+                if hasattr(source, '__class__'):
+                    is_internet = source.__class__.__name__ == 'InternetSource'
+                source_origin = "🌐 Internet" if is_internet else "📚 Curated Database"
+                
+                # Create title with hyperlink if URL available
+                if hasattr(source, 'url') and source.url:
+                    evidence_header += f"**[Source {i}]** [{source.title}]({source.url}) - {source_origin}\n"
+                else:
+                    evidence_header += f"**[Source {i}]** {source.title} - {source_origin}\n"
+                
                 evidence_header += f"- Type: {source.source_type}\n"
                 evidence_header += f"- Reliability: {source.reliability_score:.0%}\n"
+                
                 # Add snippet if available
                 if hasattr(source, 'content') and source.content:
                     snippet = source.content[:200] + '...' if len(source.content) > 200 else source.content
                     evidence_header += f"- Summary: {snippet}\n"
+                
+                # Add URL again at the end for visibility
+                if hasattr(source, 'url') and source.url:
+                    evidence_header += f"- 🔗 Link: {source.url}\n"
+                
                 evidence_header += "\n"
             evidence_header += "\n---\n\n**Medical Analysis Based on Evidence:**\n\n"
         
@@ -405,8 +621,13 @@ Begin your answer:
                         restructured += f"**Step {i}:** {para}\n\n"
                 structured = restructured
         
-        # Combine: Evidence FIRST, then the analysis
-        return evidence_header + structured
+        # Generate synthesized medical summary (appears before Additional Information section)
+        medical_summary = ""
+        if not has_medical_summary:
+            medical_summary = self._synthesize_final_answer(structured, evidence_sources)
+        
+        # Combine: Evidence FIRST, then analysis, then medical summary, then additional sources
+        return evidence_header + structured + medical_summary
     
     def _add_medical_disclaimer(self, response: str) -> str:
         """
@@ -455,7 +676,8 @@ If experiencing severe symptoms, chest pain, difficulty breathing, sudden severe
         generated_text: str, 
         question: str,
         safety_check: bool = True,
-        internet_source_count: int = 0
+        internet_source_count: int = 0,
+        validation_result = None
     ) -> MedicalResponse:
         """Parse the generated response into structured format"""
         # Clean up the generated text
@@ -479,6 +701,12 @@ If experiencing severe symptoms, chest pain, difficulty breathing, sudden severe
         
         # Compute confidence score with medical context
         confidence_score = self._compute_medical_confidence(generated_text)
+        
+        # NEW - Apply validation confidence adjustment
+        if validation_result:
+            confidence_score += validation_result.confidence_adjustment
+            confidence_score = max(0.1, min(confidence_score, 1.0))  # Keep in bounds
+            self.logger.info(f"Validation adjusted confidence by {validation_result.confidence_adjustment:+.2f}")
         
         # Safety assessment
         safety_assessment = self._assess_medical_safety(generated_text) if safety_check else "Safety check skipped"
@@ -721,14 +949,21 @@ If experiencing severe symptoms, chest pain, difficulty breathing, sudden severe
         return 0.7 * concept_alignment + 0.3 * evidence_alignment
     
     def _enhance_with_systems(self, query: str, base_response: str = None) -> tuple:
-        """Enhance response using RAG, Internet sources, and fine-tuning
+        """Enhance response using RAG, Internet sources, and fine-tuning - PARALLEL EXECUTION
         
+        NEW: Runs hardcoded YAML sources and Internet RAG in parallel, prioritizes YAML
         Returns:
-            tuple: (enhanced_response, internet_source_count)
+            tuple: (enhanced_response, internet_source_count, all_sources_merged)
         """
         try:
             enhanced_response = base_response or ""
             internet_source_count = 0
+            
+            # PARALLEL EXECUTION: Try both sources simultaneously
+            yaml_sources = []
+            internet_sources = []
+            yaml_success = False
+            internet_success = False
             
             # 1. Use Internet RAG for real-time medical information
             if hasattr(self, 'internet_rag'):
@@ -737,17 +972,26 @@ If experiencing severe symptoms, chest pain, difficulty breathing, sudden severe
                     internet_enhancement, sources = self.internet_rag.enhance_medical_response(query, enhanced_response)
                     # Count sources regardless of text length (sources add value even if text length unchanged)
                     if sources and len(sources) > 0:
+                        internet_sources = sources
+                        internet_success = True
                         internet_source_count = len(sources)
-                        self.logger.info(f"Enhanced response with Internet RAG for medical query ({internet_source_count} sources)")
-                    # Use enhanced text if it's substantively different or longer
-                    if internet_enhancement and len(internet_enhancement.strip()) > len(enhanced_response.strip()):
-                        enhanced_response = internet_enhancement
+                        self.logger.info(f"✅ Internet RAG found {internet_source_count} medical sources")
+                    else:
+                        self.logger.warning(f"⚠️ Internet RAG found no relevant medical sources")
                 except Exception as e:
                     self.logger.warning(f"Medical Internet RAG enhancement failed: {e}")
             
-            # 2. Use Evidence database for additional medical context
+            # 2. Use Evidence database for additional medical context (hardcoded YAML sources - higher priority)
             if hasattr(self, 'rag_system'):
                 try:
+                    # Check if YAML sources exist for this query - INCREASED to 8 for top 10 total
+                    yaml_sources = self.rag_system.retrieve_evidence(query, domain="medical", top_k=8)
+                    if yaml_sources and len(yaml_sources) > 0:
+                        yaml_success = True
+                        self.logger.info(f"✅ YAML database found {len(yaml_sources)} curated medical sources (reliability: 85-98%)")
+                    else:
+                        self.logger.warning(f"⚠️ No relevant sources in YAML medical database")
+                        
                     # Returns tuple: (enhanced_text, improvements)
                     evidence_enhancement, improvements = self.rag_system.enhance_agent_response(
                         enhanced_response, query, domain="medical"
@@ -758,7 +1002,32 @@ If experiencing severe symptoms, chest pain, difficulty breathing, sudden severe
                 except Exception as e:
                     self.logger.warning(f"Medical evidence system enhancement failed: {e}")
             
-            # 3. Apply enhanced response templates for FAIR metrics
+            # 3. DECISION LOGIC: Prioritize YAML, fallback to Internet, warn if neither
+            # MERGE sources: YAML first (higher reliability), then Internet
+            all_sources = []
+            if yaml_success and internet_success:
+                # Both found - use YAML primarily but include Internet for additional context
+                self.logger.info(f"🎯 BOTH SOURCES FOUND: Using {len(yaml_sources)} YAML (primary) + {len(internet_sources)} Internet (supplemental)")
+                all_sources.extend(yaml_sources)
+                all_sources.extend(internet_sources)
+            elif yaml_success:
+                self.logger.info(f"🎯 YAML ONLY: Using {len(yaml_sources)} curated YAML medical sources (Internet found no match)")
+                all_sources.extend(yaml_sources)
+                # YAML sources already enhanced in step 2
+            elif internet_success:
+                self.logger.info(f"🌐 INTERNET ONLY: Using {len(internet_sources)} Internet RAG sources (no YAML match)")
+                all_sources.extend(internet_sources)
+                # Add Internet enhancement if YAML not available
+                if internet_enhancement and len(internet_enhancement.strip()) > len(enhanced_response.strip()):
+                    enhanced_response = internet_enhancement
+            else:
+                # Neither source found relevant information
+                self.logger.warning(f"❌ No evidence found from established medical sources or Internet")
+                enhanced_response += "\n\n⚠️ **Note**: Could not find specific evidence from established medical databases or current internet sources. Response based on general medical knowledge."
+            
+            self.logger.info(f"📚 MERGED TOTAL: {len(all_sources)} sources available for citation")
+            
+            # 4. Apply enhanced response templates for FAIR metrics
             if hasattr(self, 'response_enhancer'):
                 try:
                     # Returns tuple: (enhanced_text, improvements)
@@ -771,15 +1040,16 @@ If experiencing severe symptoms, chest pain, difficulty breathing, sudden severe
                 except Exception as e:
                     self.logger.warning(f"Medical FAIR enhancement failed: {e}")
             
-            # 4. If no enhancement worked, use quality template as fallback
+            # 5. If no enhancement worked, use quality template as fallback
             if not enhanced_response or len(enhanced_response.strip()) < 50:
                 enhanced_response = self._get_quality_template(query)
             
-            return enhanced_response, internet_source_count
+            return enhanced_response, internet_source_count, all_sources
             
         except Exception as e:
             self.logger.error(f"Medical system enhancement failed: {e}")
-            return self._get_quality_template(query), 0
+            return self._get_quality_template(query), 0, []
+
     
     def _get_quality_template(self, query: str) -> str:
         """Get high-quality template response for medical queries as fallback"""

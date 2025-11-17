@@ -30,7 +30,7 @@ class EvidenceSource:
     source_type: str  # 'medical_literature', 'financial_report', 'guideline', etc.
     url: Optional[str] = None
     publication_date: Optional[str] = None
-    reliability_score: float = 0.8
+    reliability_score: float = 0.60
     domain: str = "general"
 
 @dataclass
@@ -98,6 +98,10 @@ class EvidenceDatabase:
         except Exception as e:
             logger.warning(f"[EVIDENCE] ⚠️ Could not load semantic model: {e}. Using keyword matching fallback.")
             self.semantic_model = None
+        
+        # Initialize keyword index for hybrid search
+        self.keyword_index: Dict[str, Dict[str, float]] = {}  # word -> {source_id: tf-idf score}
+        self._build_keyword_index()
     
     def _load_evidence_sources(self):
         """Load evidence sources from YAML configuration file"""
@@ -120,7 +124,7 @@ class EvidenceDatabase:
                             source_type=source_data['source_type'],
                             url=source_data.get('url'),
                             publication_date=source_data.get('publication_date'),
-                            reliability_score=source_data.get('reliability_score', 0.8),
+                            reliability_score=source_data.get('reliability_score', 0.60),
                             domain=source_data.get('domain', 'medical')
                         )
                         all_sources.append(source)
@@ -135,7 +139,7 @@ class EvidenceDatabase:
                             source_type=source_data['source_type'],
                             url=source_data.get('url'),
                             publication_date=source_data.get('publication_date'),
-                            reliability_score=source_data.get('reliability_score', 0.8),
+                            reliability_score=source_data.get('reliability_score', 0.60),
                             domain=source_data.get('domain', 'finance')
                         )
                         all_sources.append(source)
@@ -190,7 +194,7 @@ class EvidenceDatabase:
                                 source_type="qa_dataset",
                                 url=None,
                                 publication_date="2024-10-05",
-                                reliability_score=0.75,  # Lower than curated, but still useful
+                                reliability_score=0.60,  # Lowered to 60% to include more sources
                                 domain="finance"
                             )
                             
@@ -450,14 +454,153 @@ class EvidenceDatabase:
                     logger.info(f"[EVIDENCE] 💾 Saved embeddings to cache for future fast loading")
                 except Exception as save_error:
                     logger.warning(f"[EVIDENCE] ⚠️ Could not save cache: {save_error}")
-        
         except Exception as e:
             logger.error(f"[EVIDENCE] Error in cached embedding computation: {e}")
-            # Fallback to direct computation
+            # Fall back to computing embeddings without caching
             self._compute_embeddings()
+                    
+    def _build_keyword_index(self):
+        """Build keyword TF-IDF index for hybrid search"""
+        from collections import Counter
+        import math
+        
+        # Document frequency counter
+        doc_freq = Counter()
+        term_freqs = {}
+        
+        # Count term frequencies
+        for source_id, source in self.sources.items():
+            text = f"{source.title} {source.content}".lower()
+            words = re.findall(r'\b\w+\b', text)
+            term_freq = Counter(words)
+            term_freqs[source_id] = term_freq
+            
+            # Update document frequency
+            for word in set(words):
+                doc_freq[word] += 1
+        
+        # Calculate TF-IDF
+        num_docs = len(self.sources)
+        for source_id, term_freq in term_freqs.items():
+            max_freq = max(term_freq.values()) if term_freq else 1
+            for word, freq in term_freq.items():
+                tf = freq / max_freq  # Normalized term frequency
+                idf = math.log(num_docs / (1 + doc_freq[word]))  # IDF with smoothing
+                tfidf = tf * idf
+                
+                if word not in self.keyword_index:
+                    self.keyword_index[word] = {}
+                self.keyword_index[word][source_id] = tfidf
+        
+        logger.info(f"[EVIDENCE] Built keyword index with {len(self.keyword_index)} terms")
     
-    def search_sources(self, query: str, domain: str, max_results: int = 5) -> List[EvidenceSource]:
-        """Search for relevant evidence sources using semantic similarity"""
+    def _expand_query_with_synonyms(self, query: str, domain: str) -> str:
+        """Expand query with domain-specific synonyms"""
+        # Domain-specific synonym mappings
+        medical_synonyms = {
+            'pain': ['discomfort', 'ache', 'soreness'],
+            'medication': ['drug', 'medicine', 'treatment'],
+            'symptom': ['sign', 'indication'],
+            'disease': ['illness', 'condition', 'disorder'],
+            'treatment': ['therapy', 'intervention'],
+            'diagnosis': ['evaluation', 'assessment']
+        }
+        
+        finance_synonyms = {
+            'investment': ['portfolio', 'asset'],
+            'risk': ['volatility', 'uncertainty', 'exposure'],
+            'return': ['profit', 'gain', 'yield'],
+            'stock': ['equity', 'share'],
+            'bond': ['fixed-income', 'debt security'],
+            'retirement': ['pension', '401k', 'savings']
+        }
+        
+        synonyms = medical_synonyms if domain == 'medical' else finance_synonyms
+        
+        expanded_terms = [query]
+        words = query.lower().split()
+        
+        for word in words:
+            if word in synonyms:
+                expanded_terms.extend(synonyms[word][:2])  # Add top 2 synonyms
+        
+        return ' '.join(expanded_terms)
+    
+    def _bm25_search(self, query: str, top_k: int = 10) -> List[Tuple[EvidenceSource, float]]:
+        """BM25 keyword-based search"""
+        query_words = set(re.findall(r'\b\w+\b', query.lower()))
+        
+        source_scores = {}
+        for word in query_words:
+            if word in self.keyword_index:
+                for source_id, tfidf_score in self.keyword_index[word].items():
+                    if source_id not in source_scores:
+                        source_scores[source_id] = 0.0
+                    source_scores[source_id] += tfidf_score
+        
+        # Convert to list with sources
+        results = [(self.sources[sid], score) for sid, score in source_scores.items()]
+        results.sort(key=lambda x: x[1], reverse=True)
+        
+        return results[:top_k]
+    
+    def _score_evidence_quality(self, source: EvidenceSource, query: str, domain: str) -> float:
+        """Calculate evidence quality score with recency, source type, and relevance"""
+        quality_score = source.reliability_score  # Base: 0.8-0.95
+        
+        # Recency bonus (more important for finance)
+        if domain == 'finance' and source.publication_date:
+            try:
+                pub_date = datetime.strptime(source.publication_date, '%Y-%m-%d')
+                days_old = (datetime.now() - pub_date).days
+                recency_factor = max(0.5, 1 - (days_old / 365) * 0.2)  # -20% per year, min 50%
+                quality_score *= recency_factor
+            except:
+                pass
+        
+        # Source type weighting
+        source_weights = {
+            'medical': {
+                'clinical_guideline': 1.2,
+                'academic_research': 1.15,
+                'medical_textbook': 1.0,
+                'health_website': 0.85
+            },
+            'finance': {
+                'academic_research': 1.2,
+                'financial_report': 1.15,
+                'market_analysis': 1.1,
+                'financial_planning': 1.0,
+                'financial_textbook': 0.95
+            }
+        }
+        
+        if domain in source_weights and source.source_type in source_weights[domain]:
+            quality_score *= source_weights[domain][source.source_type]
+        
+        # Domain keyword density bonus
+        domain_keywords = self._extract_domain_keywords(query, domain)
+        if domain_keywords:
+            keyword_matches = sum(1 for kw in domain_keywords if kw in source.content.lower())
+            keyword_density = keyword_matches / len(domain_keywords)
+            quality_score *= (0.6 + 0.6 * keyword_density)  # 0.6-1.2x multiplier
+        
+        return min(quality_score, 1.2)  # Cap at 1.2
+    
+    def _extract_domain_keywords(self, query: str, domain: str) -> List[str]:
+        """Extract domain-specific keywords from query"""
+        query_lower = query.lower()
+        
+        medical_keywords = ['health', 'medical', 'disease', 'symptom', 'treatment', 
+                          'medication', 'diagnosis', 'therapy', 'patient', 'clinical']
+        finance_keywords = ['investment', 'finance', 'stock', 'bond', 'portfolio', 
+                          'risk', 'return', 'market', 'retirement', 'savings']
+        
+        keywords = medical_keywords if domain == 'medical' else finance_keywords
+        return [kw for kw in keywords if kw in query_lower]
+    
+    def search_sources(self, query: str, domain: str, max_results: int = 5, semantic: bool = True) -> List[EvidenceSource]:
+        """Search for relevant evidence sources using hybrid search (semantic + keyword)"""
         
         # Get domain-specific sources
         domain_source_ids = self.domain_index.get(domain, [])
@@ -467,12 +610,137 @@ class EvidenceDatabase:
         
         logger.info(f"[EVIDENCE] Searching {len(domain_source_ids)} {domain} sources for query: '{query[:60]}...'")
         
-        # Use semantic search if available
-        if self.semantic_model and self.source_embeddings:
-            return self._semantic_search(query, domain_source_ids, max_results, domain)
+        # Expand query with synonyms
+        expanded_query = self._expand_query_with_synonyms(query, domain)
+        
+        # Use hybrid search if semantic model available
+        if self.semantic_model and self.source_embeddings and semantic:
+            return self._hybrid_search(expanded_query, domain_source_ids, max_results, domain, original_query=query)
         else:
             # Fallback to keyword matching
             return self._keyword_search(query, domain_source_ids, max_results)
+    
+    def _hybrid_search(self, query: str, source_ids: List[str], max_results: int, domain: str, original_query: str = None) -> List[EvidenceSource]:
+        """Hybrid search combining semantic and keyword-based retrieval with quality scoring"""
+        try:
+            # Step 1: Get semantic search results (2x max_results for fusion)
+            semantic_results = self._semantic_search_raw(query, source_ids, max_results * 2, domain)
+            
+            # Step 2: Get keyword search results (2x max_results for fusion)
+            keyword_results = self._bm25_search(query, max_results * 2)
+            
+            # Step 3: Fusion scoring (0.7 semantic + 0.3 keyword)
+            combined_scores = {}
+            for source, score in semantic_results:
+                combined_scores[source.id] = {'source': source, 'score': 0.7 * score}
+            
+            for source, score in keyword_results:
+                if source.id in combined_scores:
+                    combined_scores[source.id]['score'] += 0.3 * score
+                else:
+                    combined_scores[source.id] = {'source': source, 'score': 0.3 * score}
+            
+            # Step 4: Apply evidence quality scoring
+            query_for_quality = original_query if original_query else query
+            for source_id, data in combined_scores.items():
+                quality_multiplier = self._score_evidence_quality(data['source'], query_for_quality, domain)
+                data['score'] *= quality_multiplier
+            
+            # Step 5: Sort and return top results with diversity
+            scored_items = [(data['score'], data['source']) for data in combined_scores.values()]
+            
+            # Apply maximal marginal relevance for diversity
+            diverse_results = self._apply_mmr_diversity(scored_items, max_results)
+            
+            logger.info(f"[EVIDENCE] ✅ Hybrid search (semantic+keyword+quality+diversity) returned {len(diverse_results)} sources")
+            return diverse_results
+            
+        except Exception as e:
+            logger.error(f"[EVIDENCE] Error in hybrid search: {e}, falling back to semantic only")
+            return self._semantic_search(query, source_ids, max_results, domain)
+    
+    def _apply_mmr_diversity(self, scored_sources: List[Tuple[float, EvidenceSource]], max_results: int, lambda_param: float = 0.7) -> List[EvidenceSource]:
+        """Apply Maximal Marginal Relevance for diverse results"""
+        if not scored_sources or not self.semantic_model:
+            return [source for _, source in scored_sources[:max_results]]
+        
+        # Sort by score
+        scored_sources.sort(key=lambda x: x[0], reverse=True)
+        
+        selected = []
+        selected_embeddings = []
+        
+        # First source: highest score
+        _, first_source = scored_sources[0]
+        selected.append(first_source)
+        if first_source.id in self.source_embeddings:
+            selected_embeddings.append(self.source_embeddings[first_source.id])
+        
+        # Remaining sources: balance relevance and diversity
+        for _ in range(max_results - 1):
+            best_score = -1
+            best_source = None
+            
+            for score, source in scored_sources:
+                if source in selected:
+                    continue
+                
+                if source.id not in self.source_embeddings:
+                    continue
+                
+                # Diversity score: minimum similarity to already selected
+                source_emb = self.source_embeddings[source.id]
+                if selected_embeddings:
+                    max_sim = max(
+                        np.dot(source_emb, sel_emb) / (np.linalg.norm(source_emb) * np.linalg.norm(sel_emb))
+                        for sel_emb in selected_embeddings
+                    )
+                    diversity_score = 1 - max_sim
+                else:
+                    diversity_score = 1.0
+                
+                # MMR score: lambda * relevance + (1-lambda) * diversity
+                mmr_score = lambda_param * score + (1 - lambda_param) * diversity_score
+                
+                if mmr_score > best_score:
+                    best_score = mmr_score
+                    best_source = source
+            
+            if best_source:
+                selected.append(best_source)
+                selected_embeddings.append(self.source_embeddings[best_source.id])
+            else:
+                break
+        
+        return selected
+    
+    def _semantic_search_raw(self, query: str, source_ids: List[str], max_results: int, domain: str) -> List[Tuple[EvidenceSource, float]]:
+        """Raw semantic search returning (source, score) tuples"""
+        try:
+            query_embedding = self.semantic_model.encode(query, convert_to_numpy=True)
+            
+            scored_sources = []
+            for source_id in source_ids:
+                if source_id not in self.source_embeddings:
+                    continue
+                
+                source_embedding = self.source_embeddings[source_id]
+                similarity = np.dot(query_embedding, source_embedding) / (
+                    np.linalg.norm(query_embedding) * np.linalg.norm(source_embedding)
+                )
+                
+                # Boost curated sources
+                if source_id in self.curated_source_ids:
+                    similarity *= 1.2
+                
+                scored_sources.append((self.sources[source_id], similarity))
+            
+            scored_sources.sort(key=lambda x: x[1], reverse=True)
+            return scored_sources[:max_results]
+            
+        except Exception as e:
+            logger.error(f"Error in semantic search: {e}")
+            return []
     
     def _semantic_search(self, query: str, source_ids: List[str], max_results: int, domain: str = "general") -> List[EvidenceSource]:
         """Perform semantic similarity search using embeddings with prioritization"""

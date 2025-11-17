@@ -11,12 +11,12 @@ from typing import Optional, Dict, Any
 class OllamaClient:
     """Client for interacting with Ollama API"""
     
-    def __init__(self, base_url: str = "http://localhost:11434"):
+    def __init__(self, base_url: str = "http://localhost:11435"):
         """
         Initialize Ollama client
         
         Args:
-            base_url: Base URL for Ollama API (default: http://localhost:11434)
+            base_url: Base URL for Ollama API (default: http://localhost:11435)
         """
         self.base_url = base_url
         self.logger = logging.getLogger(__name__)

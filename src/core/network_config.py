@@ -15,7 +15,7 @@ class NetworkConfig:
     """Dynamic network configuration manager"""
     
     DEFAULT_PORTS = {
-        'ollama': 11434,
+        'ollama': 11435,
         'django': 8000,
         'redis': 6379,
         'webapp': 3000
@@ -32,10 +32,10 @@ class NetworkConfig:
     def discover_ollama_endpoint(cls) -> str:
         """Discover available Ollama endpoint"""
         possible_endpoints = [
-            "http://localhost:11434",
-            "http://127.0.0.1:11434",
-            "http://0.0.0.0:11434",
-            "http://host.docker.internal:11434"  # Docker environment
+            "http://localhost:11435",
+            "http://127.0.0.1:11435",
+            "http://0.0.0.0:11435",
+            "http://host.docker.internal:11435"  # Docker environment
         ]
         
         for endpoint in possible_endpoints:
@@ -49,7 +49,7 @@ class NetworkConfig:
         
         # Fallback to default
         logger.warning("⚠️ Ollama not found, using default endpoint")
-        return "http://localhost:11434"
+        return "http://localhost:11435"
     
     @classmethod
     def discover_redis_endpoint(cls) -> Tuple[str, int]:

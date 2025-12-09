@@ -9,12 +9,20 @@ class ResponseFormatter:
     """Utility class to format FAIR-Agent responses for web display"""
     
     @staticmethod
-    def format_response_html(text: str) -> str:
+    def format_response_html(text: str, compact: bool = False) -> str:
         """
         Convert raw FAIR-Agent response text to clean HTML formatting with Times New Roman
+        
+        Args:
+            text: The response text to format
+            compact: If True, use minimal CSS classes instead of inline styles (saves tokens)
         """
         if not text:
             return '<p style="font-family: \'Times New Roman\', Times, serif;">No response available</p>'
+        
+        # Compact mode: use minimal formatting
+        if compact:
+            return f'<div class="fair-response">{text}</div>'
         
         # Clean up the text first
         formatted = text.strip()

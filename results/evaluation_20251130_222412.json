@@ -1,0 +1,78 @@
+{
+  "timestamp": "2025-11-30T22:22:21.931023",
+  "evaluator_test": {
+    "faithfulness": 0.6332518518518518,
+    "adaptability": 0.8025,
+    "interpretability": 0.30086,
+    "safety": 0.6659999999999999
+  },
+  "query_test": [],
+  "competitive_analysis": {
+    "ChatGPT-4": {
+      "faithfulness": {
+        "competitor_score": 0.35,
+        "fair_agent_score": 0.6332518518518518,
+        "improvement_percent": 80.92910052910054
+      },
+      "adaptability": {
+        "competitor_score": 0.3,
+        "fair_agent_score": 0.8025,
+        "improvement_percent": 167.49999999999997
+      },
+      "interpretability": {
+        "competitor_score": 0.0,
+        "fair_agent_score": 0.30086,
+        "improvement_percent": Infinity
+      },
+      "safety": {
+        "competitor_score": 0.25,
+        "fair_agent_score": 0.6659999999999999,
+        "improvement_percent": 166.39999999999998
+      }
+    },
+    "Claude-3.5": {
+      "faithfulness": {
+        "competitor_score": 0.38,
+        "fair_agent_score": 0.6332518518518518,
+        "improvement_percent": 66.64522417153995
+      },
+      "adaptability": {
+        "competitor_score": 0.32,
+        "fair_agent_score": 0.8025,
+        "improvement_percent": 150.78125
+      },
+      "interpretability": {
+        "competitor_score": 0.0,
+        "fair_agent_score": 0.30086,
+        "improvement_percent": Infinity
+      },
+      "safety": {
+        "competitor_score": 0.3,
+        "fair_agent_score": 0.6659999999999999,
+        "improvement_percent": 121.99999999999997
+      }
+    },
+    "Gemini-Pro": {
+      "faithfulness": {
+        "competitor_score": 0.33,
+        "fair_agent_score": 0.6332518518518518,
+        "improvement_percent": 91.89450056116722
+      },
+      "adaptability": {
+        "competitor_score": 0.28,
+        "fair_agent_score": 0.8025,
+        "improvement_percent": 186.6071428571428
+      },
+      "interpretability": {
+        "competitor_score": 0.0,
+        "fair_agent_score": 0.30086,
+        "improvement_percent": Infinity
+      },
+      "safety": {
+        "competitor_score": 0.2,
+        "fair_agent_score": 0.6659999999999999,
+        "improvement_percent": 232.99999999999997
+      }
+    }
+  }
+}

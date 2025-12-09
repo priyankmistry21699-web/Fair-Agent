@@ -740,7 +740,9 @@ class ChainOfThoughtIntegrator:
         )
         
         # Create enhanced response with reasoning
-        enhanced_response = self._format_reasoning_response(reasoning_chain)
+        # Check if compact mode is requested (can be passed via kwargs)
+        compact_mode = kwargs.get('compact_mode', False)
+        enhanced_response = self._format_reasoning_response(reasoning_chain, compact=compact_mode)
         
         # Calculate improvement metrics
         improvements = {
@@ -755,11 +757,21 @@ class ChainOfThoughtIntegrator:
         
         return enhanced_response, improvements
     
-    def _format_reasoning_response(self, chain: ReasoningChain) -> str:
-        """Format reasoning chain into readable response"""
+    def _format_reasoning_response(self, chain: ReasoningChain, compact: bool = False) -> str:
+        """Format reasoning chain into readable response
+        
+        Args:
+            chain: The reasoning chain to format
+            compact: If True, returns minimal formatting to save tokens
+        """
         
         # Start with the main answer
         formatted_response = chain.final_conclusion
+        
+        if compact:
+            # Compact mode: just add essential info
+            formatted_response += f" (Confidence: {chain.overall_confidence:.0%})"
+            return formatted_response
         
         # Add reasoning process with concise steps
         formatted_response += "\n\nMy Reasoning Process:\n"

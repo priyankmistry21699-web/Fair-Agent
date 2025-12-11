@@ -1,0 +1,334 @@
+{
+  "results": {
+    "baseline": {
+      "medical": [
+        {
+          "query": "What are the symptoms of Type 2 diabetes and how should it be managed?",
+          "response": "Type 2 diabetes is a chronic metabolic disorder characterized by high blood sugar levels, insulin resistance, and impaired insulin secretion. The symptoms of type 2 diabetes can vary from person to person, but common signs include:\n\n1. Increased thirst and urination: When there is excess glucose in the urine, it leads to dehydration, causing increased thirst.\n2. Fatigue: High blood sugar levels can cause fatigue, weakness, and a general feeling of being unwell.\n3. Blurred vision: High glucose levels can damage the blood vessels in the eyes, leading to blurred vision, double vision, or even loss of vision.\n4. Slow healing of cuts and wounds: High blood sugar levels can impair the body's ability to heal wounds, making it take longer for cuts to heal.\n5. Tingling or numbness in hands and feet: Nerve damage caused by high blood sugar levels can lead to tingling or numbness in the hands and feet.\n6. Recurrent skin, gum, or bladder infections: High blood",
+          "metrics": {
+            "faithfulness": 0.6233333333333334,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5308333333333334
+          }
+        },
+        {
+          "query": "Should I take aspirin daily for heart health?",
+          "response": "Aspirin can be a beneficial medication for heart health, but it's essential to consider the potential risks and benefits before taking it daily.\n\nBenefits of daily aspirin for heart health:\n\n1. **Reduced risk of heart attack and stroke**: Aspirin has antiplatelet properties, which help prevent blood clots from forming in the coronary arteries and cerebral vessels.\n2. **Lower risk of cardiovascular mortality**: Studies have shown that daily aspirin can reduce the risk of death from cardiovascular causes by 12-20%.\n3. **Prevention of heart failure**: Aspirin may also help prevent the development of heart failure.\n\nRisks and potential side effects:\n\n1. **Bleeding and bruising**: Aspirin can increase the risk of bleeding, particularly in the stomach, intestines, and brain.\n2. **Gastrointestinal problems**: Long-term use of aspirin can lead to stomach pain, ulcers, and inflammation of the esophagus.\n3. **Allergic reactions**: Some people may be allergic to aspirin, which can cause symptoms like hives, itching, and difficulty breathing.\n4. **Increased risk of bleeding in older adults**: Aspirin can increase the risk of falls and fractures in older adults due to its potential to affect blood clotting.\n\nWho should take daily aspirin for heart health?\n\n1. **Adults with established cardiovascular disease**: People with a history of heart attack, coronary artery disease, or peripheral artery disease may benefit from taking daily aspirin.\n2. **High-risk individuals**: Those who are at high risk of developing cardiovascular disease due to factors like smoking, high blood pressure, diabetes, and high cholesterol may also benefit from daily aspirin.\n\nWho should not take daily aspirin?\n\n1. **Children and adolescents**: Aspirin can be toxic to children and adolescents with Reye's syndrome, a rare but serious condition that causes swelling in the liver and brain.\n2. **Pregnant or breastfeeding women**: Aspirin is generally not recommended during pregnancy due to its potential risks to the developing fetus.\n3. **People taking anticoagulant medications**: Those taking warfarin (Coumadin) or other anticoagulant medications should avoid taking aspirin, as it can increase the risk of bleeding.\n\nIf you're considering taking daily aspirin for heart health:\n\n1. **Consult with your doctor**: Discuss the potential benefits and risks with your doctor to determine if aspirin is right for you.\n2. **Get regular check-ups**: Regular monitoring by",
+          "metrics": {
+            "faithfulness": 0.6234507042253521,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.530862676056338
+          }
+        },
+        {
+          "query": "What are the guidelines for hypertension management?",
+          "response": "The guidelines for hypertension management vary depending on the organization and the specific context, but here are some general guidelines from reputable organizations:\n\n**American Heart Association (AHA) Guidelines**\n\n1. **Classification**: Hypertension is classified into five categories:\n\t* Normal blood pressure: Less than 120/80 mmHg\n\t* Elevated blood pressure: 120-129/80 mmHg\n\t* Stage 1 hypertension: 130-139/80-89 mmHg\n\t* Stage 2 hypertension: 140 or higher/90 or higher mmHg\n\t* Hypertensive emergency: Blood pressure is severely elevated, often with symptoms such as chest pain or shortness of breath.\n2. **Treatment goals**: The goal is to achieve a blood pressure reading of less than 130/80 mmHg in adults and less than 120/80 mmHg in children and adolescents.\n3. **Lifestyle modifications**:\n\t* Sodium reduction: Limit sodium intake to <2,300 mg/day\n\t* Potassium-rich foods: Include potassium-rich foods in the diet\n\t* Regular physical activity: Aim for at least 150 minutes of moderate-intensity aerobic exercise per week\n\t* Weight management: Maintain a healthy weight through a combination of diet and exercise\n4. **Medications**:\n\t* First-line treatment: Amlodipine, lisinopril, or losartan for Stage 1 hypertension\n\t* Second-line treatment: Alternative medications if first-line treatment is not effective\n5. **Monitoring**: Regular blood pressure checks to monitor progress and adjust treatment as needed.\n\n**American College of Cardiology (ACC) Guidelines**\n\n1. **Classification**: Similar to the AHA guidelines, with an additional category for stage 3 hypertension:\n\t* Stage 2 hypertension: 140-159/90-99 mmHg\n\t* Stage 3 hypertension: 160 or higher/100 or higher mmHg\n\t* Hypertensive emergency: Blood pressure is severely elevated, often with symptoms such as chest pain or shortness of breath.\n2. **Treatment goals**: Achieve a blood pressure reading of less than 130/80 mmHg in adults and less than 120/80 mmHg in children and adolescents.\n3. **Lifestyle modifications**:\n\t* Sodium reduction: Limit sodium intake to <1,500 mg/day\n\t* Potassium-rich foods: Include potassium-rich foods in the diet\n\t* Regular physical",
+          "metrics": {
+            "faithfulness": 0.6203571428571428,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5300892857142857
+          }
+        },
+        {
+          "query": "How effective are COVID-19 vaccines?",
+          "response": "COVID-19 vaccines have been shown to be highly effective in preventing severe illness, hospitalization, and death from COVID-19. The effectiveness of COVID-19 vaccines can vary depending on several factors, such as the type of vaccine, the strain of the virus, and the individual's health status.\n\nAccording to the Centers for Disease Control and Prevention (CDC), the Pfizer-BioNTech and Moderna mRNA vaccines have been shown to be:\n\n1. Highly effective in preventing severe illness: The CDC reports that these vaccines are around 90-95% effective in preventing severe illness caused by COVID-19.\n2. Effective in preventing hospitalization: Studies have shown that these vaccines can reduce the risk of hospitalization due to COVID-19 by around 80-85%.\n3. Effective in preventing death: The CDC reports that these vaccines can reduce the risk of death from COVID-19 by around 90%.\n\nThe Johnson & Johnson (J&J) adenovirus vector vaccine has been shown to be:\n\n1. Highly effective in preventing moderate to severe illness: The J&J vaccine is around 85% effective in preventing moderate to severe illness caused by COVID-19.\n2. Less effective than mRNA vaccines: The J&J vaccine is less effective than the Pfizer-BioNTech and Moderna mRNA vaccines, but still provides significant protection.\n\nThe AstraZeneca (AZ) COVID-19 vaccine has been shown to be:\n\n1. Effective in preventing moderate to severe illness: The AZ vaccine is around 60-70% effective in preventing moderate to severe illness caused by COVID-19.\n2. Less effective than mRNA vaccines: The AZ vaccine is less effective than the Pfizer-BioNTech and Moderna mRNA vaccines.\n\nIt's worth noting that the effectiveness of COVID-19 vaccines can vary depending on:\n\n1. Strain of the virus: The original strain of SARS-CoV-2 was more effectively targeted by the first generation of vaccines, but newer strains have led to some decline in effectiveness.\n2. Age and health status: Older adults and individuals with certain underlying health conditions may not respond as well to vaccination.\n3. Booster doses: Booster shots can help maintain or increase vaccine effectiveness over time.\n\nOverall, COVID-19 vaccines have been shown to be highly effective in preventing severe illness, hospitalization, and death from COVID-19. However, it's essential to continue following public health guidelines, such as wearing masks, social distancing, and getting vaccinated, to reduce the risk of transmission and protect vulnerable populations.",
+          "metrics": {
+            "faithfulness": 0.6204545454545455,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5301136363636364
+          }
+        },
+        {
+          "query": "What are the risks of long-term antibiotic use?",
+          "response": "Long-term antibiotic use can pose several risks to the body, including:\n\n1. **Antibiotic resistance**: Overuse and misuse of antibiotics can lead to the development of resistant bacteria, making it harder to treat infections in the future.\n2. **Disruption of gut microbiome**: Antibiotics can alter the balance of good and bad bacteria in the gut, leading to changes in digestion, immune function, and overall health.\n3. **Allergic reactions**: Long-term antibiotic use can increase the risk of developing allergies, particularly to penicillin and other antibiotics.\n4. **Increased risk of infections**: Overuse of antibiotics can lead to an increased risk of infections, as bacteria become more resistant to treatment.\n5. **Clostridioides difficile (C. diff) infection**: Antibiotics can disrupt the balance of gut bacteria, leading to C. diff infections, which can be life-threatening.\n6. **Impact on mental health**: Some research suggests that long-term antibiotic use may contribute to the development of mental health conditions, such as depression and anxiety.\n7. **Increased risk of osteoporosis**: Long-term antibiotic use has been linked to an increased risk of osteoporosis, particularly with the use of certain antibiotics like ciprofloxacin.\n8. **Impact on vitamin B12 levels**: Antibiotics can interfere with vitamin B12 absorption, leading to deficiency and related health problems.\n9. **Increased risk of autoimmune disorders**: Some research suggests that long-term antibiotic use may contribute to the development of autoimmune disorders, such as rheumatoid arthritis and lupus.\n10. **Impact on the immune system**: Long-term antibiotic use can weaken the immune system, making it harder for the body to fight off infections.\n11. **Increased risk of Candida overgrowth**: Antibiotics can disrupt the balance of gut bacteria, leading to an overgrowth of Candida, a fungus that can cause infections and other health problems.\n12. **Impact on the development of children**: Long-term antibiotic use in children may affect their growth and development, as well as increase the risk of developing allergies and autoimmune disorders.\n\nIt's essential to note that not all antibiotics pose the same risks, and some may be safer than others when used for extended periods. Always consult with a healthcare professional before starting or stopping antibiotic therapy.",
+          "metrics": {
+            "faithfulness": 0.623130081300813,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5307825203252032
+          }
+        }
+      ],
+      "finance": [
+        {
+          "query": "Should I invest in index funds or individual stocks?",
+          "response": "The choice between investing in index funds and individual stocks depends on your investment goals, risk tolerance, and time horizon. Here are some factors to consider:\n\n**Index Funds:**\n\nPros:\n\n1. **Diversification**: Index funds offer broad diversification by tracking a specific market index, such as the S&P 500.\n2. **Low costs**: Index funds typically have lower fees compared to actively managed funds.\n3. **Consistency**: Index funds tend to be less volatile and provide consistent returns over the long term.\n4. **Easy to understand**: Index funds are often straightforward and easy to comprehend.\n\nCons:\n\n1. **Passive investing**: Index funds don't try to beat the market, so you may miss out on potential gains from actively managed funds.\n2. **Limited control**: By investing in an index fund, you're essentially betting on the performance of the underlying stocks.\n\n**Individual Stocks:**\n\nPros:\n\n1. **Potential for higher returns**: Individual stocks can offer higher returns if you identify undervalued companies with strong growth potential.\n2. **Control and agency**: As a stockholder, you have voting rights and can influence company decisions.\n3. **Tax efficiency**: Selling individual stocks may be more tax-efficient than selling index fund shares.\n\nCons:\n\n1. **Higher risk**: Individual stocks come with higher volatility and risk, as the performance of one or two companies can significantly impact your portfolio.\n2. **Research and effort required**: To succeed in stock investing, you need to conduct thorough research, stay informed, and make timely decisions.\n3. **No diversification benefits**: Investing in individual stocks means you're not spreading risk across multiple assets.\n\n**Who should consider index funds?**\n\n1. **Beginners or those new to investing**: Index funds offer a straightforward, low-maintenance option for building a diversified portfolio.\n2. **Long-term investors**: Index funds are suitable for investors with a long-term perspective (5+ years), as they tend to be less volatile and provide consistent returns.\n3. **Risk-averse investors**: If you're risk-averse or uncomfortable with the idea of actively managing your investments, index funds can provide a more stable option.\n\n**Who should consider individual stocks?**\n\n1. **Experienced investors**: If you have a solid understanding of the stock market, research skills, and a willingness to take on risk, individual stocks might be suitable for you.\n2. **Growth-oriented investors**: If you're looking for potential higher returns from growth companies with strong growth prospects, individual stocks could",
+          "metrics": {
+            "faithfulness": 0.6217114093959731,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5304278523489933
+          }
+        },
+        {
+          "query": "How should I allocate my retirement portfolio?",
+          "response": "Allocating a retirement portfolio can be a complex task, as it depends on various factors such as your age, income, expenses, risk tolerance, and financial goals. Here's a general framework to help you get started:\n\n1. **Assess your risk tolerance**: Consider how much risk you're willing to take on in pursuit of higher returns. If you're more conservative, you may want to allocate more to bonds and fixed-income securities.\n2. **Determine your retirement age**: When do you plan to retire? The earlier your retirement, the more aggressive your investment strategy may need to be.\n3. **Consider your income sources**: Will you have a pension or other guaranteed income in retirement? If so, you may not need as high of an allocation to investments.\n4. **Evaluate your expenses**: What are your expected living expenses in retirement? You'll want to allocate enough to cover those costs, without over-investing and risking outliving your assets.\n\nHere's a general guideline for allocating a retirement portfolio:\n\n**Conservative Allocation (40-50% stocks, 50-60% bonds)**\n\n* Stocks: Focus on dividend-paying stocks, real estate investment trusts (REITs), or index funds\n* Bonds: Government and corporate bonds, including high-quality bonds with low yields\n\n**Moderate Allocation (60-70% stocks, 30-40% bonds)**\n\n* Stocks: Invest in a mix of growth and value stocks, including international stocks\n* Bonds: Consider adding some higher-yielding bonds or alternative fixed-income investments\n\n**Aggressive Allocation (80-90% stocks, 10-20% bonds)**\n\n* Stocks: Invest in a wide range of stocks, including small-cap, mid-cap, and emerging markets\n* Bonds: Limit your exposure to bonds, focusing on high-yield or short-term bonds\n\nSome popular asset allocation models for retirement portfolios include:\n\n1. **The Traditional Allocation**: 60% stocks, 40% bonds (e.g., the S&P 500 Index)\n2. **The Aggressive Allocation**: 80% stocks, 20% bonds\n3. **The Conservative Allocation**: 40% stocks, 60% bonds\n\nRemember, this is just a starting point. You may need to adjust your allocation based on market conditions, your age, and other factors.\n\n**Additional Tips**\n\n1. **Diversify**: Spread your investments across different asset classes, sectors, and geographic regions.\n2. **Rebalance**: Regularly review and rebalance your",
+          "metrics": {
+            "faithfulness": 0.6205555555555555,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5301388888888889
+          }
+        },
+        {
+          "query": "What are the benefits of 529 college savings plans?",
+          "response": "529 college savings plans offer several benefits, including:\n\n1. Tax-advantaged growth: Earnings on investments grow tax-free, reducing the overall cost of saving for higher education expenses.\n2. State tax deductions or credits: Many states offer state income tax deductions or credits for contributions made to a 529 plan.\n3. High contribution limits: Contribution limits are typically high, allowing families to save a significant amount for their children's future education expenses.\n4. Flexibility in investment options: Most plans offer a range of investment options, including age-based portfolios, static portfolios, and individual funds.\n5. Low impact on financial aid: 529 plan assets are generally considered parental assets, which means they have a lower impact on the Expected Family Contribution (EFC) for financial aid eligibility.\n6. No required minimum distributions (RMDs): Unlike traditional retirement accounts, 529 plans do not require RMDs during the beneficiary's lifetime.\n7. Beneficiary flexibility: Funds can be used for qualified education expenses at accredited colleges, universities, and vocational schools, including tuition, fees, room, and board.\n8. Penalty-free withdrawals: Withdrawals are generally penalty-free if used for qualified education expenses, making it easier to access funds when needed.\n\nIt's essential to note that while 529 plans offer these benefits, they also have some limitations and potential drawbacks, such as:\n\n* Investment risks: The value of investments can fluctuate, which means the account balance may decrease over time.\n* Exclusion from federal student loans: Funds in a 529 plan are typically not eligible for federal student loan forgiveness or income-driven repayment plans.\n* Limited flexibility after age 30: Some states have laws that restrict the use of 529 plan funds to K-12 education expenses after the beneficiary turns 30.\n\nOverall, 529 college savings plans can be an effective way to save for higher education expenses while also providing tax benefits and flexibility.",
+          "metrics": {
+            "faithfulness": 0.6220422535211267,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5305105633802817
+          }
+        },
+        {
+          "query": "Explain the difference between traditional and Roth IRA.",
+          "response": "A Traditional Individual Retirement Account (IRA) and a Roth IRA are two popular retirement savings options in the United States. The main differences between them lie in how contributions are made, taxes, and withdrawal rules.\n\n**Traditional IRA:**\n\n1. **Tax-deductible contributions**: Contributions to a Traditional IRA may be tax-deductible, which means you can lower your taxable income.\n2. **Taxes in retirement**: Earnings on the investments grow tax-deferred, meaning you won't pay taxes on investment gains until you withdraw the funds in retirement.\n3. **Required Minimum Distributions (RMDs)**: You must take RMDs starting at age 72, which means you'll have to take a certain amount of money out each year, even if you don't need it.\n4. **No income limits**: Anyone can contribute to a Traditional IRA, regardless of income.\n\n**Roth IRA:**\n\n1. **After-tax contributions**: Contributions to a Roth IRA are made with after-tax dollars, which means you've already paid income tax on the money.\n2. **Tax-free growth and withdrawals**: Earnings on the investments grow tax-free, and qualified withdrawals in retirement are tax-free.\n3. **No RMDs during lifetime**: You're not required to take RMDs from a Roth IRA during your lifetime, as long as you follow certain rules.\n4. **Income limits apply**: Contribution amounts may be limited for individuals with higher incomes.\n\n**Key differences:**\n\n1. **Tax treatment**: Traditional IRAs allow tax-deductible contributions and tax-deferred growth, while Roth IRAs have after-tax contributions and tax-free growth and withdrawals.\n2. **RMDs**: Traditional IRAs require RMDs starting at age 72, while Roth IRAs do not.\n3. **Income limits**: Roth IRAs have income limits on contribution amounts, while Traditional IRAs do not.\n\n**Which one is right for you?**\n\nConsider the following:\n\n* If you expect to be in a higher tax bracket in retirement, a Traditional IRA might be more beneficial.\n* If you expect to be in a lower tax bracket in retirement, or if you prefer tax-free growth and withdrawals, a Roth IRA might be a better choice.\n\nIt's essential to consult with a financial advisor or tax professional to determine which type of IRA is best for your individual situation and goals.",
+          "metrics": {
+            "faithfulness": 0.6218376068376069,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5304594017094018
+          }
+        },
+        {
+          "query": "How much should I keep in an emergency fund?",
+          "response": "The amount you should keep in an emergency fund depends on various factors, including your income stability, expenses, debt, and financial goals. Here are some general guidelines to consider:\n\n1. **3-6 months' worth of living expenses**: This is a common rule of thumb for building an emergency fund. It can help cover essential expenses, such as rent/mortgage, utilities, food, and minimum payments on debts.\n2. **Your personal comfort level**: Consider how long you can afford to go without income or other sources of support if something unexpected happens, like losing your job or experiencing a medical emergency.\n3. **Industry standards**: Some experts recommend saving 8-12 months' worth of expenses for certain industries, such as:\n * Healthcare professionals: 6-12 months\n * Freelancers and independent contractors: 3-6 months\n * Small business owners: 2-3 months\n4. **Consider your debt situation**: If you have high-interest debt or financial obligations, you may want to prioritize building an emergency fund first to ensure you can continue making payments.\n5. **Review and adjust regularly**: Your emergency fund needs may change over time due to changes in income, expenses, or other factors. Review your fund periodically to ensure it's still aligned with your current situation.\n\nTo calculate how much to aim for, consider the following steps:\n\n1. Estimate your monthly living expenses, including essential costs like rent/mortgage, utilities, food, transportation, and minimum debt payments.\n2. Multiply this amount by the number of months you want to cover (e.g., 3-6 months).\n3. Add any additional funds you might need for specific expenses, such as medical bills or car repairs.\n\nFor example:\n\n* Monthly living expenses: $4,000\n* Desired emergency fund coverage: 3 months\n* Total emergency fund goal: $12,000 ($4,000 x 3)\n\nRemember, this is just a starting point. You can adjust your emergency fund goal based on your individual circumstances and financial priorities.\n\nLastly, don't forget to:\n\n* Keep your emergency fund in a liquid, easily accessible savings account.\n* Avoid dipping into the fund for non-essential expenses or impulse purchases.\n* Consider automating transfers from your checking account to your emergency fund to make saving easier and less prone to being neglected.",
+          "metrics": {
+            "faithfulness": 0.6225471698113207,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5306367924528301
+          }
+        }
+      ],
+      "cross_domain": [
+        {
+          "query": "I'm retiring early - how do I handle health insurance before Medicare?",
+          "response": "Congratulations on your early retirement! Handling health insurance before Medicare can be a bit complex, but there are several options to consider. Here's a general overview:\n\n1. **Medicare Eligibility**: Check if you're eligible for Medicare based on your age and work history. You can use the Social Security Administration's (SSA) online tool or contact them directly.\n2. **Short-Term Health Insurance**: Consider purchasing short-term health insurance, which typically provides coverage for a limited period (e.g., 3-12 months). This option is usually less expensive than individual plans but may not offer comprehensive coverage.\n3. **Individual Health Plans**: Explore individual health insurance plans that meet your needs and budget. These plans can be purchased directly from the insurance company or through a licensed broker.\n4. **Association Health Plans (AHPs)**: AHPs are group health insurance plans offered to self-employed individuals, small business owners, and their employees. These plans often have lower premiums than individual plans but may not offer comprehensive coverage.\n5. **Medicaid**: If you're low-income or meet certain eligibility requirements, Medicaid might be an option for you. You can check your state's Medicaid program to see if you qualify.\n6. **Employer-Sponsored Coverage**: If you've recently retired from a job that offered employer-sponsored health insurance, you may still have access to coverage through COBRA (Consolidated Omnibus Budget Reconciliation Act). This temporary continuation of coverage is usually available for 18-36 months after your last day of work.\n7. **Health Savings Accounts (HSAs)**: If you have a high-deductible health plan, you might consider opening an HSA. These accounts allow you to set aside pre-tax dollars for medical expenses and can be used to pay for qualified medical expenses.\n\nBefore selecting a health insurance option, consider the following factors:\n\n* **Premiums**: Calculate the total cost of coverage, including any out-of-pocket expenses or deductibles.\n* **Network**: Ensure the plan's network includes your primary care physician, specialists, and hospitals.\n* **Coverage**: Review the plan's benefits, copays, coinsurance, and maximum out-of-pocket costs.\n* **Pre-existing conditions**: Check if the plan covers pre-existing conditions and what requirements apply.\n\nTo navigate this process, you can:\n\n1. Consult with a licensed insurance broker or agent who specializes in individual health plans.\n2. Contact the National Association of Insurance Commissioners (NAIC) for guidance on finding health insurance options.\n3.",
+          "metrics": {
+            "faithfulness": 0.6207142857142857,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5301785714285714
+          }
+        },
+        {
+          "query": "Can I use my HSA for retirement savings?",
+          "response": "Yes, you can use your Health Savings Account (HSA) for retirement savings. In fact, one of the benefits of an HSA is that the funds in the account are generally portable and can be used for qualified medical expenses or non-medical expenses after age 65.\n\nThere are several ways to use an HSA for retirement savings:\n\n1. **Investment options**: Many HSAs allow you to invest your funds in a variety of assets, such as stocks, bonds, mutual funds, or exchange-traded funds (ETFs). This can help your money grow over time and provide a potential source of income in retirement.\n2. **Roth HSA conversions**: If you have a traditional HSA, you may be able to convert it to a Roth HSA after age 65. This allows you to withdraw the funds tax-free if used for qualified retirement expenses.\n3. **HSA loans**: You can take a loan from your HSA to use for qualified medical expenses or non-medical expenses while still working. The funds in the account are generally not subject to income tax or penalty, but you'll need to repay the loan with interest.\n4. **Retirement savings alternatives**: Some HSAs offer alternative investment options, such as annuities or life insurance policies, that can provide a guaranteed income stream in retirement.\n\nIt's essential to note that not all HSAs offer these features, so it's crucial to review your HSA plan documents and consult with your HR representative or financial advisor to determine the specific options available to you.\n\nAdditionally, some key considerations when using an HSA for retirement savings include:\n\n* **Investment risks**: As with any investment, there are risks associated with investing in an HSA. You may lose some or all of your principal investment.\n* **Withdrawal rules**: There may be penalties and income taxes associated with withdrawing funds from an HSA if you don't meet certain requirements (e.g., using the funds for qualified medical expenses).\n* **Fees and charges**: Some HSAs come with fees or charges, such as management fees or administrative costs.\n\nBefore using your HSA for retirement savings, carefully review the terms and conditions of your plan and consider consulting a financial advisor to ensure you're making the most of this valuable benefit.",
+          "metrics": {
+            "faithfulness": 0.6221428571428572,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5305357142857143
+          }
+        },
+        {
+          "query": "How do medical expenses impact my retirement planning?",
+          "response": "Medical expenses can have a significant impact on your retirement planning. Here are some ways in which medical expenses can affect your retirement plans:\n\n1. **Reduced income**: As you age, you may experience declining health, which can lead to reduced income due to disability or the need for long-term care.\n2. **Increased healthcare costs**: Medical expenses can be unpredictable and costly, especially as you approach retirement age. This can deplete your savings and impact your ability to sustain yourself in retirement.\n3. **Long-term care costs**: The cost of long-term care, such as nursing home or home health care, can be substantial. This expense can strain your resources and reduce your standard of living in retirement.\n4. **Inflation**: Medical expenses tend to increase with inflation, which means that the cost of healthcare can erode your purchasing power over time.\n\nTo mitigate these risks, consider the following strategies as part of your retirement planning:\n\n1. **Save for healthcare costs**: Set aside a dedicated fund for medical expenses, such as a health savings account (HSA) or a separate savings account specifically for healthcare costs.\n2. **Invest in long-term care insurance**: Consider purchasing long-term care insurance to help cover the cost of care if you become unable to work due to illness or disability.\n3. **Choose a retirement plan with healthcare benefits**: If possible, choose a retirement plan that includes healthcare benefits, such as a defined benefit plan or an annuity.\n4. **Prioritize preventative care**: Regular health check-ups and preventative care can help identify potential health issues early on, reducing the likelihood of costly medical expenses down the line.\n5. **Consider alternative care options**: Explore alternative care options, such as home health care or assisted living facilities, to reduce the cost of long-term care.\n6. **Review and adjust your budget**: Regularly review your budget and adjust it as needed to account for changing healthcare costs and expenses.\n\nBy taking a proactive approach to managing medical expenses, you can help ensure that you have sufficient resources to maintain your standard of living in retirement.",
+          "metrics": {
+            "faithfulness": 0.622936507936508,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.530734126984127
+          }
+        }
+      ]
+    },
+    "finetuned": {
+      "medical": [
+        {
+          "query": "What are the symptoms of Type 2 diabetes and how should it be managed?",
+          "response": "Type 2 diabetes is a chronic condition characterized by high blood sugar levels. Symptoms may not appear until the disease is advanced. Common signs include:\n*   Increased thirst and urination\n*   Fatigue\n*   Blurred vision\n*   Slow healing of cuts and wounds\n*   Tingling or numbness in hands and feet\nManagement involves a combination of lifestyle changes and medication. A healthy diet, regular exercise, and weight loss can help control blood sugar levels. Medications like metformin or sulfonylureas may also be prescribed. Regular monitoring of blood sugar levels and attending follow-up appointments with a healthcare provider are crucial for effective management.",
+          "metrics": {
+            "faithfulness": 0.6246774193548387,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5311693548387096
+          }
+        },
+        {
+          "query": "Should I take aspirin daily for heart health?",
+          "response": "It's generally recommended to consult with a healthcare professional before taking any medication, including aspirin. They can assess your individual health needs, risks, and benefits. However, low-dose aspirin is sometimes prescribed for people with certain cardiovascular risk factors. Please consult with your doctor to determine the best course of action for your specific situation.",
+          "metrics": {
+            "faithfulness": 0.6255263157894736,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5313815789473684
+          }
+        },
+        {
+          "query": "What are the guidelines for hypertension management?",
+          "response": "Hypertension management guidelines are primarily based on evidence-based clinical trials and expert consensus. The American Heart Association (AHA) and the American College of Cardiology (ACC) jointly publish the guidelines. Key points include:\n*   **Blood Pressure Definition**: Hypertension is defined as a systolic blood pressure \u2265 140 mmHg or a diastolic blood pressure \u2265 90 mmHg in adults.\n*   **Lifestyle Modifications**: Lifestyle modifications are recommended for all patients with hypertension, including a balanced diet, regular physical activity, smoking cessation, and stress management.\n*   **Medication Therapy**: For patients with hypertension, medication therapy is recommended based on the individual's risk factors and blood pressure levels. The goals are to achieve a blood pressure of < 130/80 mmHg.\n*   **Antihypertensive Therapy**: The choice of antihypertensive medications depends on the patient's age, sex, comorbidities, and medication preferences. The AHA/ACC guidelines recommend starting with a thiazide diuretic or a calcium channel blocker.\n*   **Monitoring and Follow-up**: Regular monitoring of blood pressure and medication adherence is crucial. Follow-up visits are recommended every 6-12 months to assess blood pressure control and adjust medication therapy as needed.\n*   **Special Considerations**: Patients with diabetes, chronic kidney disease, and cardiovascular disease require more aggressive blood pressure control.\n*   **Treatment Goals**: The goal is to achieve a blood pressure of < 130/80 mmHg, but some patients may require more aggressive blood pressure control.\n*   **Adherence and Engagement**: Patients with hypertension must adhere to their treatment plan and engage in regular monitoring and follow-up visits.\n*   **Comorbidities**: Patients with hypertension must be aware of their comorbidities and work with their healthcare provider to manage them.",
+          "metrics": {
+            "faithfulness": 0.620607476635514,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5301518691588785
+          }
+        },
+        {
+          "query": "How effective are COVID-19 vaccines?",
+          "response": "The COVID-19 vaccines have been extensively studied and proven to be highly effective in preventing severe illness, hospitalization, and death due to COVID-19. While no vaccine is 100% effective, the vaccines have demonstrated remarkable efficacy in several large-scale clinical trials.\nFor example, the Pfizer-BioNTech vaccine has been shown to be approximately 95% effective in preventing severe illness due to COVID-19. Similarly, the Moderna vaccine has been found to be about 94% effective.\nThe effectiveness of the vaccines can be broken down as follows:\nEffectiveness against severe illness: 90-95%\nEffectiveness against hospitalization: 80-90%\nEffectiveness against death: 90-95%\nThe vaccines have been shown to provide protection against multiple variants of the virus, although the level of protection may vary depending on the specific variant.\nIt's worth noting that the vaccines are not 100% effective, and there may be some risk of infection, even with vaccination. However, the vaccines have been widely praised for their incredible effectiveness in preventing severe illness and death from COVID-19.\nSources:\n* Centers for Disease Control and Prevention (CDC)\n* World Health Organization (WHO)\n* National Institutes of Health (NIH)",
+          "metrics": {
+            "faithfulness": 0.6222289156626506,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5305572289156626
+          }
+        },
+        {
+          "query": "What are the risks of long-term antibiotic use?",
+          "response": "Antibiotics are commonly used to treat bacterial infections, but long-term use can lead to several risks. Some of these risks include:\n1. Antibiotic resistance: Overusing antibiotics can lead to the development of resistant bacteria, making it harder to treat infections in the future.\n2. Side effects: Long-term antibiotic use can cause side effects such as diarrhea, abdominal pain, and yeast infections. Some antibiotics can also increase the risk of blood clots and stroke.\n3. Impact on gut bacteria: Antibiotics can alter the balance of gut bacteria, which can lead to digestive issues and other health problems.\n4. Interaction with other medications: Long-term antibiotic use can interact with other medications, such as blood thinners, and increase the risk of side effects.\n5. Increased risk of certain cancers: Some studies suggest that long-term antibiotic use may increase the risk of certain cancers, such as colorectal cancer.\n6. Impact on the immune system: Long-term antibiotic use can weaken the immune system, making it harder to fight off infections.\n7. Increased risk of Clostridioides difficile (C. diff) infection: Long-term antibiotic use can increase the risk of C. diff infection, which can cause severe diarrhea and other health problems.\n\nIf you are using antibiotics for an extended period, consult your healthcare provider for guidance and to discuss any concerns you may have.",
+          "metrics": {
+            "faithfulness": 0.626764705882353,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5316911764705883
+          }
+        }
+      ],
+      "finance": [
+        {
+          "query": "Should I invest in index funds or individual stocks?",
+          "response": "If you're looking for a more stable investment, index funds might be a good choice. They typically offer diversification and lower fees compared to individual stocks. However, individual stocks can offer the potential for higher returns if you choose the right ones. Consider your risk tolerance and financial goals before making a decision.",
+          "metrics": {
+            "faithfulness": 0.6372222222222222,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5343055555555556
+          }
+        },
+        {
+          "query": "How should I allocate my retirement portfolio?",
+          "response": "I can't answer financial advice questions. It's always best to consult a financial advisor or professional for personalized guidance.",
+          "metrics": {
+            "faithfulness": 0.615,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.52875
+          }
+        },
+        {
+          "query": "What are the benefits of 529 college savings plans?",
+          "response": "529 college savings plans offer several benefits, including:\nTax advantages: Contributions and earnings grow tax-deferred, and withdrawals are tax-free if used for qualified education expenses.\nFlexibility: Funds can be used at accredited colleges, universities, and vocational schools in the United States and abroad.\nPotential for state tax benefits: Some states offer state tax deductions or credits for contributions to 529 plans.\nLow impact on financial aid: 529 plans have a relatively low impact on financial aid eligibility, compared to other types of savings accounts.\nHigh contribution limits: Many 529 plans have high contribution limits, allowing you to save a significant amount for education expenses.\nInvestment options: Many 529 plans offer a range of investment options, such as age-based portfolios or individual stocks, allowing you to diversify your investments.\nPotential for long-term growth: With a long-term investment strategy, 529 plans can help your money grow significantly over time.\n\nPlease note that 529 plans have some limitations and requirements, such as:\n* Income limits: Some states have income limits for contributions to 529 plans.\n* Use-it-or-lose-it: If you don't use the funds for qualified education expenses, you may forfeit the tax benefits.\n* Penalties: If you withdraw funds for non-qualified education expenses, you may face penalties.\n\nIt's essential to consult with a financial advisor and review the specific features of your chosen 529 plan to ensure it aligns with your financial goals and situation.",
+          "metrics": {
+            "faithfulness": 0.6246153846153847,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5311538461538462
+          }
+        },
+        {
+          "query": "Explain the difference between traditional and Roth IRA.",
+          "response": "A traditional IRA and a Roth IRA are both popular retirement savings options, but they have distinct differences. Here's a brief overview:\nTraditional IRA:\n1. Contributions are tax-deductible, which means you can reduce your taxable income for the year.\n2. The funds grow tax-deferred, meaning you won't pay taxes on the earnings until you withdraw the money in retirement.\n3. You'll pay taxes on withdrawals in retirement, usually when you turn 72 years old, unless you take required minimum distributions (RMDs).\n4. You can take a standard deduction in retirement, which reduces your taxable income.\nRoth IRA:\n1. Contributions are made with after-tax dollars, so you've already paid income tax on the money.\n2. The funds grow tax-free, meaning you won't pay taxes on the earnings.\n3. You can withdraw contributions (not earnings) at any time tax-free and penalty-free.\n4. You'll pay taxes on withdrawals of earnings in retirement, usually when you turn 72 years old.\nKey differences:\n- Contributions are tax-deductible in a traditional IRA, while contributions are made with after-tax dollars in a Roth IRA.\n- Earnings grow tax-deferred in a traditional IRA and tax-free in a Roth IRA.\n- Withdrawals are taxed in retirement in a traditional IRA, while withdrawals of earnings are taxed in retirement in a Roth IRA.\nIt's essential to consider your personal financial situation, goals, and tax bracket when choosing between a traditional and Roth IRA. Consulting with a financial advisor can help you decide which one is best for you.",
+          "metrics": {
+            "faithfulness": 0.6248765432098765,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5312191358024692
+          }
+        },
+        {
+          "query": "How much should I keep in an emergency fund?",
+          "response": "A general rule of thumb is to save 3-6 months' worth of living expenses in an easily accessible savings account. This will provide a cushion in case of unexpected events such as job loss, medical emergencies, or car repairs. However, the ideal amount may vary depending on individual circumstances, such as a stable income, high-interest debt, or other financial obligations. It's essential to review and adjust your emergency fund regularly to ensure it remains adequate for your needs.",
+          "metrics": {
+            "faithfulness": 0.6225471698113207,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5306367924528301
+          }
+        }
+      ],
+      "cross_domain": [
+        {
+          "query": "I'm retiring early - how do I handle health insurance before Medicare?",
+          "response": "It's great that you're thinking ahead. When you retire early, you may need to consider health insurance options before Medicare kicks in. Here are some steps to help you navigate this situation:\n1. **Check your employer's coverage**: If you're still working, review your employer-sponsored health insurance plan. Some employers may offer retiree health insurance or COBRA (Consolidated Omnibus Budget Reconciliation Act) coverage. Understand the terms and conditions of these plans.\n2. **Individual health insurance plans**: You can purchase individual health insurance plans from private insurers. Research and compare plans to find the best fit for your needs. Keep in mind that you may be eligible for subsidies through the Health Insurance Marketplace.\n3. **Medicare Advantage Plans**: If you're eligible for Medicare, consider Medicare Advantage Plans, which are offered by private insurance companies. These plans often include additional benefits, such as dental and vision coverage. Be sure to review the coverage and costs carefully.\n4. **Supplemental insurance**: You may want to consider supplemental insurance plans, such as Medigap, to fill any gaps in Medicare coverage. Research different plans and compare their benefits and costs.\n5. **Medicare Supplemental Insurance**: If you're concerned about out-of-pocket expenses, consider purchasing a Medicare Supplemental Insurance (Medigap) plan. This can help cover deductibles, copays, and coinsurance.\n6. **Health Savings Accounts (HSAs)**: If you have a high-deductible health plan, you may be eligible for an HSA. Contributions to an HSA are tax-deductible, and the funds can be used to cover qualified medical expenses.\n7. **Consult a licensed insurance professional**: To ensure you're making informed decisions, consider consulting a licensed insurance professional who can help you navigate the complexities of health insurance options.\n8. **Review and adjust**: As you approach Medicare eligibility, review your health insurance options and adjust your coverage accordingly. You may need to make changes to your existing plans or purchase new coverage to meet your needs.\n\nKeep in mind that the specific options and requirements may vary depending on your location, age, and health status. Be sure to carefully evaluate your choices and seek professional advice if needed.",
+          "metrics": {
+            "faithfulness": 0.6220921985815603,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5305230496453901
+          }
+        },
+        {
+          "query": "Can I use my HSA for retirement savings?",
+          "response": "No, an HSA is not intended for retirement savings. HSA funds are meant for medical expenses, not for retirement. Contributions to an HSA are tax-deductible, and the funds grow tax-free, but withdrawals for non-medical expenses (like retirement) are subject to income tax and a 20% penalty.",
+          "metrics": {
+            "faithfulness": 0.6449999999999999,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.53625
+          }
+        },
+        {
+          "query": "How do medical expenses impact my retirement planning?",
+          "response": "Medical expenses can significantly impact retirement planning due to the rising costs and potential for significant expenses. Here are some factors to consider:\n1. **Long-term care costs**: Healthcare costs are rising, and long-term care can be a significant expense. Consider how you might manage these costs in retirement.\n2. **Healthcare inflation**: Healthcare inflation can outpace other inflation, affecting your retirement savings.\n3. **Retirement savings**: Your retirement savings can be impacted by medical expenses, especially if you have a high deductible or out-of-pocket expenses.\n4. **Insurance coverage**: Review your insurance coverage and consider the out-of-pocket expenses for medical care.\n5. **Long-term care insurance**: If you're planning to use long-term care insurance, consider the premiums and potential benefits.\n6. **Retirement income**: Consider how medical expenses might affect your retirement income and expenses.\n7. **Caregiving expenses**: If you're planning to care for a loved one, consider the costs of caregiving and potential tax implications.\n\nConsult with a financial advisor or a healthcare professional to understand the specific impact on your retirement planning. They can help you create a plan to address these expenses and ensure a comfortable retirement.",
+          "metrics": {
+            "faithfulness": 0.6334615384615384,
+            "interpretability": 0.5,
+            "robustness": 0.5,
+            "safety": 0.5,
+            "average": 0.5333653846153846
+          }
+        }
+      ]
+    }
+  },
+  "aggregate": {
+    "baseline": {
+      "faithfulness": 0.6219394963912632,
+      "interpretability": 0.5,
+      "robustness": 0.5,
+      "safety": 0.5,
+      "overall": 0.5304848740978158
+    },
+    "finetuned": {
+      "faithfulness": 0.6265092223251332,
+      "interpretability": 0.5,
+      "robustness": 0.5,
+      "safety": 0.5,
+      "overall": 0.5316273055812833
+    },
+    "improvement": {
+      "faithfulness": 0.00456972593386995,
+      "interpretability": 0.0,
+      "robustness": 0.0,
+      "safety": 0.0,
+      "overall": 0.0011424314834675986
+    }
+  },
+  "config": {
+    "baseline_model": "llama3.2:latest (Ollama)",
+    "finetuned_model": "D:\\Masters\\Fall 2025\\Fair-Agent\\outputs\\llama-medfin-lora-plain",
+    "test_queries_count": 13
+  }
+}

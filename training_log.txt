@@ -1,0 +1,51 @@
+
+A module that was compiled using NumPy 1.x cannot be run in
+NumPy 2.3.5 as it may crash. To support both 1.x and 2.x
+versions of NumPy, modules must be compiled with NumPy 2.0.
+Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
+
+If you are a user of the module, the easiest solution will be to
+downgrade to 'numpy<2' or try to upgrade the affected module.
+We expect that some modules will need time to support NumPy 2.
+
+Traceback (most recent call last):  File "D:\Masters\Fall 2025\Fair-Agent\scripts\finetune_llama_lora_plain.py", line 4, in <module>
+    from datasets import load_dataset
+  File "D:\ML and DL\Anaconda\Lib\site-packages\datasets\__init__.py", line 17, in <module>
+    from .arrow_dataset import Column, Dataset
+  File "D:\ML and DL\Anaconda\Lib\site-packages\datasets\arrow_dataset.py", line 59, in <module>
+    import pandas as pd
+  File "D:\ML and DL\Anaconda\Lib\site-packages\pandas\__init__.py", line 49, in <module>
+    from pandas.core.api import (
+  File "D:\ML and DL\Anaconda\Lib\site-packages\pandas\core\api.py", line 1, in <module>
+    from pandas._libs import (
+  File "D:\ML and DL\Anaconda\Lib\site-packages\pandas\_libs\__init__.py", line 17, in <module>
+    import pandas._libs.pandas_datetime  # noqa: F401 # isort: skip # type: ignore[reportUnusedImport]
+Traceback (most recent call last):
+  File "D:\ML and DL\Anaconda\Lib\site-packages\numpy\core\_multiarray_umath.py", line 46, in __getattr__
+    raise ImportError(msg)
+ImportError: 
+A module that was compiled using NumPy 1.x cannot be run in
+NumPy 2.3.5 as it may crash. To support both 1.x and 2.x
+versions of NumPy, modules must be compiled with NumPy 2.0.
+Some module may need to rebuild instead e.g. with 'pybind11>=2.12'.
+
+If you are a user of the module, the easiest solution will be to
+downgrade to 'numpy<2' or try to upgrade the affected module.
+We expect that some modules will need time to support NumPy 2.
+
+
+Traceback (most recent call last):
+  File "D:\Masters\Fall 2025\Fair-Agent\scripts\finetune_llama_lora_plain.py", line 4, in <module>
+    from datasets import load_dataset
+  File "D:\ML and DL\Anaconda\Lib\site-packages\datasets\__init__.py", line 17, in <module>
+    from .arrow_dataset import Column, Dataset
+  File "D:\ML and DL\Anaconda\Lib\site-packages\datasets\arrow_dataset.py", line 59, in <module>
+    import pandas as pd
+  File "D:\ML and DL\Anaconda\Lib\site-packages\pandas\__init__.py", line 49, in <module>
+    from pandas.core.api import (
+  File "D:\ML and DL\Anaconda\Lib\site-packages\pandas\core\api.py", line 1, in <module>
+    from pandas._libs import (
+  File "D:\ML and DL\Anaconda\Lib\site-packages\pandas\_libs\__init__.py", line 17, in <module>
+    import pandas._libs.pandas_datetime  # noqa: F401 # isort: skip # type: ignore[reportUnusedImport]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ImportError: numpy.core.multiarray failed to import

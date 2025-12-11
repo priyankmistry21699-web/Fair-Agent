@@ -67,7 +67,8 @@ class FinanceAgent:
         self,
         model_name: Optional[str] = None,
         device: str = "auto",
-        max_length: int = 1024
+        max_length: int = 1024,
+        use_finetuned: bool = True  # NEW: Enable fine-tuned model
     ):
         """
         Initialize the Finance Agent
@@ -76,6 +77,7 @@ class FinanceAgent:
             model_name: Model identifier (default: llama3.2:latest)
             device: Device to run the model on ('cpu', 'cuda', or 'auto')
             max_length: Maximum token length for generation
+            use_finetuned: Whether to use fine-tuned model (default: True)
         """
         # Dynamic model selection  
         if model_name is None:
@@ -87,6 +89,7 @@ class FinanceAgent:
         self.device = device
         self.max_length = max_length
         self.logger = logging.getLogger(__name__)
+        self.use_finetuned = use_finetuned
 
         # Initialize all enhancement systems
         self.response_enhancer = ResponseEnhancer()
@@ -100,7 +103,65 @@ class FinanceAgent:
         if not self.ollama_client.is_available():
             raise RuntimeError("Ollama is required but not available. Please start Ollama service.")
         
+        # Initialize fine-tuned model if enabled
+        self.finetuned_model = None
+        self.finetuned_tokenizer = None
+        if use_finetuned:
+            self._load_finetuned_model(device)
+        
         self.logger.info(f"✅ Finance Agent using Ollama model: {self.model_name}")
+        if self.finetuned_model:
+            self.logger.info(f"✅ Fine-tuned model loaded successfully")
+    
+    def _load_finetuned_model(self, device: str = "auto"):
+        """Load the fine-tuned model with LoRA adapters"""
+        try:
+            import torch
+            from transformers import AutoTokenizer, AutoModelForCausalLM
+            from peft import PeftModel
+            
+            base_model_name = "meta-llama/Llama-3.2-3B-Instruct"
+            adapter_path = os.path.join(os.getcwd(), "outputs", "llama-medfin-lora-enhanced")
+            
+            if not os.path.exists(adapter_path):
+                self.logger.warning(f"Fine-tuned model not found at {adapter_path}, using Ollama only")
+                return
+            
+            self.logger.info(f"Loading fine-tuned model from {adapter_path}...")
+            
+            # Load tokenizer
+            self.finetuned_tokenizer = AutoTokenizer.from_pretrained(
+                base_model_name,
+                local_files_only=False,
+                trust_remote_code=True
+            )
+            
+            # Load base model with device map
+            if device == "auto":
+                device_map = "auto"
+            else:
+                device_map = {"":  device}
+            
+            base_model = AutoModelForCausalLM.from_pretrained(
+                base_model_name,
+                local_files_only=False,
+                load_in_8bit=True,  # 8-bit quantization (reduces memory by ~50%)
+                device_map=device_map,
+                trust_remote_code=True,
+                low_cpu_mem_usage=True,  # Optimize CPU memory
+                max_memory={0: "3GB", "cpu": "8GB"}  # Limit GPU to 3GB
+            )
+            
+            # Load LoRA adapter
+            self.finetuned_model = PeftModel.from_pretrained(base_model, adapter_path)
+            self.finetuned_model.eval()
+            
+            self.logger.info("✅ Fine-tuned model loaded successfully")
+            
+        except Exception as e:
+            self.logger.warning(f"Failed to load fine-tuned model: {e}. Using Ollama fallback.")
+            self.finetuned_model = None
+            self.finetuned_tokenizer = None
 
     def query(
         self,
@@ -120,43 +181,58 @@ class FinanceAgent:
             FinanceResponse with answer, confidence, reasoning, and risk assessment
         """
         try:
-            # Step 1: RETRIEVE EVIDENCE FIRST - PARALLEL (YAML + Internet)
-            evidence_sources = []
-            internet_sources_early = []
+            # Step 1: Build RAG+CoT prompt with evidence (NEW METHOD)
+            prompt, evidence_sources = self.rag_system.build_cot_prompt_with_evidence(
+                query=question,
+                domain="finance",
+                max_sources=5  # Retrieve top 5 curated sources
+            )
             
-            # 1A: Get YAML sources
-            if hasattr(self, 'rag_system'):
-                try:
-                    evidence_sources = self.rag_system.retrieve_evidence(
-                        query=question,
-                        domain="finance",
-                        top_k=8  # INCREASED to 8 for top 10 total (8 YAML + 2-3 Internet)
-                    )
-                    self.logger.info(f"✅ Retrieved {len(evidence_sources)} YAML evidence sources")
-                except Exception as e:
-                    self.logger.warning(f"Evidence retrieval failed: {e}")
+            self.logger.info(f"✅ Built RAG+CoT prompt with {len(evidence_sources)} evidence sources")
             
-            # 1B: Get Internet sources EARLY (before prompt construction)
-            if hasattr(self, 'internet_rag'):
-                try:
-                    concepts = self.internet_rag._extract_financial_concepts(question)
-                    for concept in concepts[:3]:  # Top 3 concepts for more coverage
-                        sources = self.internet_rag._fetch_financial_concept_info(concept)
-                        internet_sources_early.extend(sources[:1])  # 1 per concept = ~3 Internet sources
-                    if internet_sources_early:
-                        self.logger.info(f"✅ Retrieved {len(internet_sources_early)} Internet sources EARLY for prompt")
-                        self.logger.info(f"📚 TOTAL SOURCES FOR LLM: {len(evidence_sources) + len(internet_sources_early)} (YAML + Internet)")
-                        # Merge Internet sources with YAML for prompt construction
-                        evidence_sources.extend(internet_sources_early)
-                except Exception as e:
-                    self.logger.warning(f"Early Internet retrieval failed: {e}")
-            
-            # Step 2: Construct prompt WITH ALL EVIDENCE (YAML + Internet)
-            prompt = self._construct_prompt_with_evidence(question, evidence_sources, context)
-            
-            # Step 3: Generate response using Ollama
+            # Step 2: Generate response using fine-tuned model (or Ollama fallback)
             base_answer = None
-            try:
+            
+            if self.finetuned_model and self.finetuned_tokenizer:
+                # Use fine-tuned model
+                self.logger.info(f"🎯 Generating response with fine-tuned model")
+                try:
+                    inputs = self.finetuned_tokenizer(
+                        prompt,
+                        return_tensors="pt",
+                        truncation=True,
+                        max_length=1024  # Reduced from 2048 to save memory
+                    )
+                    
+                    if torch.cuda.is_available():
+                        inputs = {k: v.cuda() for k, v in inputs.items()}
+                    
+                    with torch.no_grad():
+                        outputs = self.finetuned_model.generate(
+                            **inputs,
+                            max_new_tokens=256,  # Reduced from 512 to save memory
+                            temperature=0.7,
+                            top_p=0.9,
+                            do_sample=True,
+                            pad_token_id=self.finetuned_tokenizer.eos_token_id,
+                            use_cache=True  # Enable KV cache for efficiency
+                        )
+                    
+                    generated_text = self.finetuned_tokenizer.decode(outputs[0], skip_special_tokens=True)
+                    # Extract only the response part (after the prompt)
+                    if len(generated_text) > len(prompt):
+                        base_answer = generated_text[len(prompt):].strip()
+                    else:
+                        base_answer = generated_text
+                    
+                    self.logger.info(f"✅ Fine-tuned model generated {len(base_answer)} chars")
+                    
+                except Exception as e:
+                    self.logger.warning(f"Fine-tuned model failed: {e}. Falling back to Ollama.")
+                    base_answer = None
+            
+            # Fallback to Ollama if fine-tuned model unavailable or failed
+            if not base_answer:
                 self.logger.info(f"Generating evidence-based response using Ollama ({self.model_name})")
                 generated_text = self.ollama_client.generate(
                     model=self.model_name,
@@ -169,9 +245,6 @@ class FinanceAgent:
                     base_answer = generated_text
                 else:
                     self.logger.warning("Ollama generated response too short")
-
-            except Exception as e:
-                self.logger.warning(f"Model generation failed: {e}")
 
             # Step 4: Enhance response using full system integration (keep existing enhancements)
             enhanced_answer, internet_source_count, merged_sources = self._enhance_with_systems(question, base_answer)

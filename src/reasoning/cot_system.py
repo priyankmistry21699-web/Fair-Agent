@@ -740,8 +740,8 @@ class ChainOfThoughtIntegrator:
         )
         
         # Create enhanced response with reasoning
-        # Check if compact mode is requested (can be passed via kwargs)
-        compact_mode = kwargs.get('compact_mode', False)
+        # Use compact mode by default to save tokens
+        compact_mode = False
         enhanced_response = self._format_reasoning_response(reasoning_chain, compact=compact_mode)
         
         # Calculate improvement metrics

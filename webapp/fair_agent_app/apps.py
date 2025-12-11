@@ -13,12 +13,10 @@ class FairAgentAppConfig(AppConfig):
     def ready(self):
         """
         Initialize FAIR-Agent system when Django starts
+        NOTE: Lazy initialization - agents will be loaded on first query
         """
-        try:
-            from .services import FairAgentService
-            # Initialize the FAIR-Agent service
-            FairAgentService.initialize()
-        except Exception as e:
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.error(f"Failed to initialize FAIR-Agent service: {e}")
+        # Skip initialization here to avoid concurrent model loading issues
+        # Agents will be initialized lazily on first query via FairAgentService.process_query()
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info("FAIR-Agent app ready (lazy initialization mode)")

@@ -1181,6 +1181,95 @@ class RAGSystem:
         
         return formatted
     
+    def build_cot_prompt_with_evidence(
+        self,
+        query: str,
+        domain: str,
+        max_sources: int = 5
+    ) -> Tuple[str, List[EvidenceSource]]:
+        """
+        Build a Chain-of-Thought prompt with retrieved evidence
+        
+        This is the KEY method for Step 1: RAG + CoT integration
+        
+        Args:
+            query: User's question
+            domain: Domain (medical/finance)
+            max_sources: Maximum number of evidence sources to retrieve
+            
+        Returns:
+            Tuple of (formatted_prompt, evidence_sources)
+        """
+        logger.info(f"[RAG+CoT] Building prompt for query: {query[:60]}...")
+        
+        # Step 1: Retrieve relevant evidence
+        evidence_sources = self.retrieve_evidence(query, domain, top_k=max_sources)
+        
+        logger.info(f"[RAG+CoT] Retrieved {len(evidence_sources)} evidence sources")
+        
+        # Step 2: Format evidence with citations
+        evidence_text = self.format_evidence_for_prompt(evidence_sources)
+        
+        # Step 3: Build Chain-of-Thought structured prompt
+        domain_instructions = {
+            "medical": """You are a medical AI assistant. Your responses must be:
+1. Evidence-based (cite sources)
+2. Safe (include appropriate disclaimers)
+3. Clear (explain medical concepts simply)
+4. Responsible (recommend professional consultation)""",
+            
+            "finance": """You are a financial AI assistant. Your responses must be:
+1. Evidence-based (cite sources)
+2. Risk-aware (mention investment risks)
+3. Clear (explain financial concepts simply)
+4. Responsible (recommend professional advice for major decisions)"""
+        }
+        
+        system_instruction = domain_instructions.get(domain, "You are a helpful AI assistant.")
+        
+        # Build the complete prompt
+        prompt = f"""{system_instruction}
+
+{evidence_text}
+
+=== USER QUESTION ===
+{query}
+
+=== INSTRUCTIONS: THINK STEP-BY-STEP ===
+
+Please analyze this question using the following reasoning process:
+
+**Step 1: Evidence Review**
+- What information is available in the provided sources?
+- Which sources are most relevant to this specific question?
+- Are there any contradictions or limitations in the evidence?
+
+**Step 2: Key Points Identification**
+- What are the main facts that address the user's question?
+- What details are important for understanding?
+- What context or background is needed?
+
+**Step 3: Safety & Risk Assessment**
+- Is this a high-risk situation requiring immediate action?
+- What safety warnings or precautions should be included?
+- What are the limitations of general advice for this topic?
+
+**Step 4: Response Formulation**
+- Provide a clear, direct answer to the question
+- Include citations to specific sources [Source X]
+- Explain reasoning when appropriate
+- Add necessary disclaimers for the domain
+
+**Step 5: Disclaimer**
+- Include appropriate {domain} disclaimer at the end
+
+Now, provide your response following this structured approach:
+"""
+        
+        logger.info(f"[RAG+CoT] ✅ Built structured CoT prompt ({len(prompt)} chars)")
+        
+        return prompt, evidence_sources
+    
     def enhance_agent_response(
         self, 
         response: str, 

@@ -1,5 +1,7 @@
 # 🚀 FAIR-Agent: Revolutionary AI System
 
+![FAIR-Agent Architecture](Gemini_Generated_Image_bkrb1mbkrb1mbkrb.png)
+
 > **The World's First Quantifiably Trustworthy AI**  
 > **+205% Better Than ChatGPT, Claude & Gemini**  
 > **F**aithful, **A**daptable, **I**nterpretable, and **R**isk-Aware Multi-Agent LLM

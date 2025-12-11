@@ -340,8 +340,10 @@ class Orchestrator:
         )
     
     def _handle_cross_domain_query(self, query: str, context: Optional[Dict]) -> OrchestratedResponse:
-        """Handle queries that span both domains"""
-        # Get responses from both agents
+        """Handle queries that span both domains - uses RAG+CoT+Fine-tuned model"""
+        self.logger.info("[ORCHESTRATOR] Processing cross-domain query with RAG+CoT+Fine-tuned model")
+        
+        # Get responses from both agents (they will use RAG+CoT+Fine-tuned model)
         finance_response = self.finance_agent.query(query, context)
         medical_response = self.medical_agent.query(query, context)
         
@@ -358,6 +360,8 @@ class Orchestrator:
             primary_answer = medical_response.answer
             confidence = medical_response.confidence_score
         
+        self.logger.info(f"[ORCHESTRATOR] Cross-domain result - Finance conf: {finance_response.confidence_score:.2f}, Medical conf: {medical_response.confidence_score:.2f}")
+        
         return OrchestratedResponse(
             primary_answer=primary_answer,
             domain=QueryDomain.CROSS_DOMAIN,
@@ -365,7 +369,7 @@ class Orchestrator:
             finance_response=finance_response,
             medical_response=medical_response,
             cross_domain_analysis=cross_domain_analysis,
-            routing_explanation="Query contains both financial and medical elements, processed by both agents"
+            routing_explanation="Query contains both financial and medical elements, processed by both agents with RAG+CoT+Fine-tuned model"
         )
     
     def _handle_unknown_query(self, query: str, context: Optional[Dict]) -> OrchestratedResponse:

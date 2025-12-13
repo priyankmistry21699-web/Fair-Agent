@@ -10,7 +10,7 @@ import logging
 import re
 from typing import Dict, List, Optional, Union
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline, BitsAndBytesConfig
 from dataclasses import dataclass
 import sys
 import os
@@ -117,14 +117,25 @@ class MedicalAgent:
             self.logger.info(f"✅ Fine-tuned model loaded successfully")
     
     def _load_finetuned_model(self, device: str = "auto"):
-        """Load the fine-tuned model with LoRA adapters"""
+        """Load the fine-tuned model with LoRA adapters
+        Set USE_FINETUNED=False to use Ollama only (faster, for production)
+        Set USE_FINETUNED=True to use fine-tuned model (slower, for testing)
+        """
+        USE_FINETUNED = False  # Set to True to enable fine-tuned model
+        
+        if not USE_FINETUNED:
+            self.logger.info("Fine-tuned model disabled (USE_FINETUNED=False), using Ollama only")
+            return
+        
         try:
             import torch
             from transformers import AutoTokenizer, AutoModelForCausalLM
             from peft import PeftModel
             
             base_model_name = "meta-llama/Llama-3.2-3B-Instruct"
-            adapter_path = os.path.join(os.getcwd(), "outputs", "llama-medfin-lora-enhanced")
+            # Use project root instead of cwd (which changes when running from webapp/)
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            adapter_path = os.path.join(project_root, "outputs", "llama-medfin-lora-enhanced")
             
             if not os.path.exists(adapter_path):
                 self.logger.warning(f"Fine-tuned model not found at {adapter_path}, using Ollama only")
@@ -145,14 +156,22 @@ class MedicalAgent:
             else:
                 device_map = {"":  device}
             
+            # Configure 4-bit quantization for better memory efficiency
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch.float16,
+                bnb_4bit_use_double_quant=True,
+            )
+            
             base_model = AutoModelForCausalLM.from_pretrained(
                 base_model_name,
                 local_files_only=False,
-                load_in_8bit=True,  # 8-bit quantization (reduces memory by ~50%)
+                quantization_config=bnb_config,
                 device_map=device_map,
                 trust_remote_code=True,
-                low_cpu_mem_usage=True,  # Optimize CPU memory
-                max_memory={0: "3GB", "cpu": "8GB"}  # Limit GPU to 3GB
+                low_cpu_mem_usage=True,
+                max_memory={0: "3.5GB", "cpu": "12GB"}
             )
             
             # Load LoRA adapter
@@ -217,12 +236,13 @@ class MedicalAgent:
                     with torch.no_grad():
                         outputs = self.finetuned_model.generate(
                             **inputs,
-                            max_new_tokens=256,  # Reduced from 512 to save memory
+                            max_new_tokens=256,  # Increased for more complete responses
                             temperature=0.7,
                             top_p=0.9,
                             do_sample=True,
                             pad_token_id=self.finetuned_tokenizer.eos_token_id,
-                            use_cache=True  # Enable KV cache for efficiency
+                            use_cache=True,  # Enable KV cache for efficiency
+                            num_beams=1  # Disable beam search to save memory
                         )
                     
                     generated_text = self.finetuned_tokenizer.decode(outputs[0], skip_special_tokens=True)
@@ -244,7 +264,7 @@ class MedicalAgent:
                 generated_text = self.ollama_client.generate(
                     model=self.model_name,
                     prompt=prompt,
-                    max_tokens=512,
+                    max_tokens=2048,  # Increased for comprehensive responses
                     temperature=0.7,
                     top_p=0.9
                 )
@@ -543,16 +563,12 @@ Begin your answer:
         self.logger.info(f"🏥 MEDICAL SUMMARY: Found {len(unique_source_nums)} cited sources in text: {unique_source_nums}")
         self.logger.info(f"🏥 Evidence sources available: {len(evidence_sources) if evidence_sources else 0}")
         
-        # ALWAYS show ALL evidence sources in MEDICAL SUMMARY
-        # This ensures users see all 10 sources even if LLM only cited 1-2
-        if evidence_sources and len(evidence_sources) > len(unique_source_nums):
-            self.logger.info(f"🏥 LLM cited {len(unique_source_nums)} sources, but {len(evidence_sources)} total available")
-            self.logger.info(f"🏥 OVERRIDE: Including ALL {len(evidence_sources)} sources in MEDICAL SUMMARY for transparency")
-            unique_source_nums = list(range(1, len(evidence_sources) + 1))
-        elif not unique_source_nums and evidence_sources:
-            self.logger.info(f"🏥 No explicit [Source X] citations found in response text")
-            self.logger.info(f"🏥 Including all {len(evidence_sources)} evidence sources in MEDICAL SUMMARY")
-            unique_source_nums = list(range(1, len(evidence_sources) + 1))
+        # ALWAYS show ALL available sources (up to 12) for transparency
+        if evidence_sources:
+            max_sources = 12
+            # Always show all available sources, not just cited ones
+            self.logger.info(f"🏥 Including ALL {min(len(evidence_sources), max_sources)} available sources")
+            unique_source_nums = list(range(1, min(max_sources + 1, len(evidence_sources) + 1)))
         
         # Build source details with actual URLs from evidence_sources
         source_details = []

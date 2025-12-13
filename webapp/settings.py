@@ -176,7 +176,7 @@ CHANNEL_LAYERS = {
 # FAIR-Agent specific settings
 FAIR_AGENT_SETTINGS = {
     'MAX_QUERY_LENGTH': 1000,
-    'DEFAULT_TIMEOUT': 30,
+    'DEFAULT_TIMEOUT': 120,  # Increased to 2 minutes for fine-tuned model loading + generation
     'ENABLE_SAFETY_CHECKS': True,
     'LOG_LEVEL': 'INFO',
     'MAX_WORKERS': 4,

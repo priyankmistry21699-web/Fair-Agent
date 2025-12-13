@@ -1,340 +1,545 @@
-{% extends 'base.html' %}
-
-{% block title %}FAIR-Agent: Faithful, Adaptive, Interpretable, Risk-Aware LLM{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}FAIR-Agent: Faithful, Adaptive,
+Interpretable, Risk-Aware LLM{% endblock %} {% block content %}
 <div class="container-fluid">
-    <!-- Project Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card bg-gradient-primary text-white shadow-lg">
-                <div class="card-body text-center py-4">
-                    <h1 class="display-6 mb-2"><i class="fas fa-brain me-2"></i>FAIR-Agent</h1>
-                    <h4 class="mb-2">Faithful, Adaptive, Interpretable, and Risk-Aware Agentic LLMs</h4>
-                    <p class="mb-0 opacity-75">Multi-Agent Framework for Finance and Medicine • CS668 Analytics Capstone Fall 2025</p>
-                </div>
-            </div>
+  <!-- Project Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card bg-gradient-primary text-white shadow-lg">
+        <div class="card-body text-center py-4">
+          <h1 class="display-6 mb-2">
+            <i class="fas fa-brain me-2"></i>FAIR-Agent
+          </h1>
+          <h4 class="mb-2">
+            Faithful, Adaptive, Interpretable, and Risk-Aware Agentic LLMs
+          </h4>
+          <p class="mb-0 opacity-75">
+            Multi-Agent Framework for Finance and Medicine • CS668 Analytics
+            Capstone Fall 2025
+          </p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live FAIR Metrics Dashboard -->
+  <div class="row mb-4" id="metricsRow" style="display: none">
+    <div class="col-12">
+      <div
+        class="card shadow-lg border-0"
+        style="background: linear-gradient(135deg, #f8fbff, #e8f4fd)"
+      >
+        <div
+          class="card-header"
+          style="background: linear-gradient(135deg, #007bff, #0056b3)"
+        >
+          <h5 class="mb-0 text-white">
+            <i class="fas fa-chart-line me-2"></i>Live FAIR Metrics Dashboard
+          </h5>
+          <small class="text-white-50">Real-time analysis results</small>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-2">
+              <div
+                class="text-center p-3 rounded"
+                style="
+                  background: linear-gradient(135deg, #007bff, #0056b3);
+                  color: white;
+                "
+              >
+                <div class="small fw-bold mb-1" style="color: white">
+                  Faithfulness
+                </div>
+                <div class="h4 mb-1 text-white" id="summary-faithfulness">
+                  --
+                </div>
+                <small style="color: #e3f2fd">Evidence-based</small>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div
+                class="text-center p-3 rounded"
+                style="
+                  background: linear-gradient(135deg, #007bff, #0056b3);
+                  color: white;
+                "
+              >
+                <div class="small fw-bold mb-1" style="color: white">
+                  Hallucination
+                </div>
+                <div class="h4 mb-1 text-white" id="summary-hallucination">
+                  --
+                </div>
+                <small style="color: #e3f2fd">Reduction</small>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div
+                class="text-center p-3 rounded"
+                style="
+                  background: linear-gradient(135deg, #007bff, #0056b3);
+                  color: white;
+                "
+              >
+                <div class="small fw-bold mb-1" style="color: white">
+                  Interpretability
+                </div>
+                <div class="h4 mb-1 text-white" id="summary-interpretability">
+                  --
+                </div>
+                <small style="color: #e3f2fd">Clarity</small>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div
+                class="text-center p-3 rounded"
+                style="
+                  background: linear-gradient(135deg, #007bff, #0056b3);
+                  color: white;
+                "
+              >
+                <div class="small fw-bold mb-1" style="color: white">Risk</div>
+                <div class="h4 mb-1 text-white" id="summary-risk">--</div>
+                <small style="color: #e3f2fd">Awareness</small>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div
+                class="text-center p-3 rounded"
+                style="
+                  background: linear-gradient(135deg, #007bff, #0056b3);
+                  color: white;
+                "
+              >
+                <div class="small fw-bold mb-1" style="color: white">
+                  Calibration
+                </div>
+                <div class="h4 mb-1 text-white" id="summary-calibration">
+                  --
+                </div>
+                <small style="color: #e3f2fd">Error</small>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div
+                class="text-center p-3 rounded"
+                style="
+                  background: linear-gradient(135deg, #007bff, #0056b3);
+                  color: white;
+                "
+              >
+                <div class="small fw-bold mb-1" style="color: white">
+                  Overall FAIR
+                </div>
+                <div class="h4 mb-1 text-white" id="summary-overall">--</div>
+                <small style="color: #e3f2fd">Combined</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 text-center">
+            <small class="text-primary">
+              <i class="fas fa-clock me-1"></i>Response Time:
+              <span id="summary-response-time">--</span>
+              <span class="ms-3"
+                ><i class="fas fa-info-circle me-1"></i>Live metrics update
+                after each query</span
+              >
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div
+        class="card shadow-lg border-0"
+        style="background: linear-gradient(135deg, #f8fbff, #e8f4fd)"
+      >
+        <div
+          class="card-header border-bottom"
+          style="background: linear-gradient(135deg, #007bff, #0056b3)"
+        >
+          <h4 class="mb-0 text-white">
+            <i class="fas fa-comments me-2"></i>FAIR-Agent Query
+          </h4>
+          <small class="text-white-50">Finance and Medicine specialist</small>
+        </div>
+        <div class="card-body">
+          <form id="queryForm">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="queryInput" class="form-label fw-bold"
+                >Enter your query:</label
+              >
+              <textarea
+                id="queryInput"
+                class="form-control form-control-lg"
+                rows="4"
+                required
+                placeholder="Ask about finance or medicine topics...&#10;Example: How does diabetes affect cardiovascular health?"
+              ></textarea>
+            </div>
+
+            <!-- Model Selection -->
+            <div class="mb-3">
+              <label for="modelSelect" class="form-label fw-bold">
+                <i class="fas fa-brain me-2"></i>Select AI Model:
+              </label>
+              <select id="modelSelect" class="form-select form-select-lg">
+                <option value="llama3.2:latest" selected>
+                  Llama 3.2 (Recommended)
+                </option>
+                <option value="llama3:latest">Llama 3 (Best Quality)</option>
+                <option value="gpt-oss:latest">GPT-OSS</option>
+                <option value="codellama:latest">CodeLlama</option>
+
+                <!-- RECOMMENDED FOR MEDICAL/FINANCE -->
+
+                <!-- POPULAR GENERAL PURPOSE -->
+                <optgroup label="🌟 Popular General Purpose">
+                  <option value="llama3.1:8b" disabled>
+                    Llama 3.1 8B - 4.7GB 📥 Download
+                  </option>
+                  <option value="gemma2:9b" disabled>
+                    Gemma 2 9B - 5.5GB (Google) 📥 Download
+                  </option>
+                  <option value="qwen2.5:7b" disabled>
+                    Qwen 2.5 7B - 4.7GB (Alibaba) � Download
+                  </option>
+                  <option value="deepseek-r1:7b" disabled>
+                    DeepSeek R1 7B - 4.7GB 📥 Download
+                  </option>
+                </optgroup>
+
+                <!-- SMALLER/FASTER OPTIONS -->
+                <optgroup label="⚡ Smaller & Faster">
+                  <option value="phi3.5:latest" disabled>
+                    Phi-3.5 - 3.8B 📥 Download
+                  </option>
+                  <option value="gemma2:2b" disabled>
+                    Gemma 2 2B - 1.6GB 📥 Download
+                  </option>
+                  <option value="llama3.2:1b" disabled>
+                    Llama 3.2 1B - 1.3GB 📥 Download
+                  </option>
+                </optgroup>
+
+                <!-- EXTERNAL API MODELS -->
+                <optgroup label="🌐 External APIs (Not Configured)">
+                  <option value="gpt-3.5-turbo" disabled>
+                    GPT-3.5 Turbo (OpenAI API Required)
+                  </option>
+                  <option value="gpt-4" disabled>
+                    GPT-4 (OpenAI API Required)
+                  </option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <button
+                type="submit"
+                id="submitBtn"
+                class="btn btn-primary btn-lg"
+              >
+                <i class="fas fa-paper-plane me-2"></i>Process with FAIR-Agent
+              </button>
+            </div>
+          </form>
+
+          <div
+            id="loadingDiv"
+            class="alert alert-info mt-3"
+            style="display: none"
+          >
+            <strong>Processing...</strong> Please wait.
+          </div>
+
+          <div id="responseDiv" class="mt-3" style="display: none">
+            <div class="card">
+              <div class="card-header">
+                <h5>Response</h5>
+              </div>
+              <div class="card-body" id="responseBody">
+                <!-- Response will be inserted here -->
+              </div>
+            </div>
+          </div>
+
+          <div id="debugLog" class="mt-3">
+            <h6><i class="fas fa-bug me-2"></i>System Debug Log:</h6>
+            <div
+              id="logContent"
+              class="bg-dark text-light p-3 rounded"
+              style="
+                max-height: 200px;
+                overflow-y: auto;
+                font-family: monospace;
+                font-size: 0.8em;
+              "
+            >
+              <div class="text-info">
+                [System] FAIR-Agent initialized and ready...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Live FAIR Metrics Dashboard -->
-    <div class="row mb-4" id="metricsRow" style="display: none;">
-        <div class="col-12">
-            <div class="card shadow-lg border-0" style="background: linear-gradient(135deg, #f8fbff, #e8f4fd);">
-                <div class="card-header" style="background: linear-gradient(135deg, #007bff, #0056b3);">
-                    <h5 class="mb-0 text-white"><i class="fas fa-chart-line me-2"></i>Live FAIR Metrics Dashboard</h5>
-                    <small class="text-white-50">Real-time analysis results</small>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-2">
-                            <div class="text-center p-3 rounded" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white;">
-                                <div class="small fw-bold mb-1" style="color: white;">Faithfulness</div>
-                                <div class="h4 mb-1 text-white" id="summary-faithfulness">--</div>
-                                <small style="color: #e3f2fd;">Evidence-based</small>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="text-center p-3 rounded" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white;">
-                                <div class="small fw-bold mb-1" style="color: white;">Hallucination</div>
-                                <div class="h4 mb-1 text-white" id="summary-hallucination">--</div>
-                                <small style="color: #e3f2fd;">Reduction</small>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="text-center p-3 rounded" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white;">
-                                <div class="small fw-bold mb-1" style="color: white;">Interpretability</div>
-                                <div class="h4 mb-1 text-white" id="summary-interpretability">--</div>
-                                <small style="color: #e3f2fd;">Clarity</small>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="text-center p-3 rounded" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white;">
-                                <div class="small fw-bold mb-1" style="color: white;">Risk</div>
-                                <div class="h4 mb-1 text-white" id="summary-risk">--</div>
-                                <small style="color: #e3f2fd;">Awareness</small>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="text-center p-3 rounded" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white;">
-                                <div class="small fw-bold mb-1" style="color: white;">Calibration</div>
-                                <div class="h4 mb-1 text-white" id="summary-calibration">--</div>
-                                <small style="color: #e3f2fd;">Error</small>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="text-center p-3 rounded" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white;">
-                                <div class="small fw-bold mb-1" style="color: white;">Overall FAIR</div>
-                                <div class="h4 mb-1 text-white" id="summary-overall">--</div>
-                                <small style="color: #e3f2fd;">Combined</small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-3 text-center">
-                        <small class="text-primary">
-                            <i class="fas fa-clock me-1"></i>Response Time: <span id="summary-response-time">--</span>
-                            <span class="ms-3"><i class="fas fa-info-circle me-1"></i>Live metrics update after each query</span>
-                        </small>
-                    </div>
-                </div>
-            </div>
+    <div class="col-lg-4">
+      <!-- Project Information -->
+      <div
+        class="card shadow-sm border-0 mb-4"
+        style="background: linear-gradient(135deg, #f8fbff, #e8f4fd)"
+      >
+        <div
+          class="card-header text-white"
+          style="background: linear-gradient(135deg, #007bff, #0056b3)"
+        >
+          <h5 class="mb-0">
+            <i class="fas fa-info-circle me-2"></i>Project Information
+          </h5>
         </div>
-    </div>
+        <div class="card-body">
+          <h6 class="text-primary">CS668 Analytics Capstone Fall 2025</h6>
+          <p class="small mb-3">
+            Multi-agent LLM framework for finance and medicine with
+            evidence-based reasoning.
+          </p>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card shadow-lg border-0" style="background: linear-gradient(135deg, #f8fbff, #e8f4fd);">
-                <div class="card-header border-bottom" style="background: linear-gradient(135deg, #007bff, #0056b3);">
-                    <h4 class="mb-0 text-white"><i class="fas fa-comments me-2"></i>FAIR-Agent Query</h4>
-                    <small class="text-white-50">Finance and Medicine specialist</small>
-                </div>
-                <div class="card-body">
-                    <form id="queryForm">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="queryInput" class="form-label fw-bold">Enter your query:</label>
-                            <textarea id="queryInput" class="form-control form-control-lg" rows="4" required 
-                                placeholder="Ask about finance or medicine topics...&#10;Example: How does diabetes affect cardiovascular health?"></textarea>
-                        </div>
-                        
-                        <!-- Model Selection -->
-                        <div class="mb-3">
-                            <label for="modelSelect" class="form-label fw-bold">
-                                <i class="fas fa-brain me-2"></i>Select AI Model:
-                            </label>
-                            <select id="modelSelect" class="form-select form-select-lg">
-                                <option value="llama3.2:latest" selected>Llama 3.2 (Recommended)</option>
-                                <option value="llama3:latest">Llama 3 (Best Quality)</option>
-                                <option value="gpt-oss:latest">GPT-OSS</option>
-                                <option value="codellama:latest">CodeLlama</option>
-                                
-                                <!-- RECOMMENDED FOR MEDICAL/FINANCE -->
-                                
-                                
-                                <!-- POPULAR GENERAL PURPOSE -->
-                                <optgroup label="🌟 Popular General Purpose">
-                                    <option value="llama3.1:8b" disabled>Llama 3.1 8B - 4.7GB 📥 Download</option>
-                                    <option value="gemma2:9b" disabled>Gemma 2 9B - 5.5GB (Google) 📥 Download</option>
-                                    <option value="qwen2.5:7b" disabled>Qwen 2.5 7B - 4.7GB (Alibaba) � Download</option>
-                                    <option value="deepseek-r1:7b" disabled>DeepSeek R1 7B - 4.7GB 📥 Download</option>
-                                </optgroup>
-                                
-                                <!-- SMALLER/FASTER OPTIONS -->
-                                <optgroup label="⚡ Smaller & Faster">
-                                    <option value="phi3.5:latest" disabled>Phi-3.5 - 3.8B 📥 Download</option>
-                                    <option value="gemma2:2b" disabled>Gemma 2 2B - 1.6GB 📥 Download</option>
-                                    <option value="llama3.2:1b" disabled>Llama 3.2 1B - 1.3GB 📥 Download</option>
-                                </optgroup>
-                                
-                                <!-- EXTERNAL API MODELS -->
-                                <optgroup label="🌐 External APIs (Not Configured)">
-                                    <option value="gpt-3.5-turbo" disabled>GPT-3.5 Turbo (OpenAI API Required)</option>
-                                    <option value="gpt-4" disabled>GPT-4 (OpenAI API Required)</option>
-                                </optgroup>
-                            </select>
+          <div class="mb-3">
+            <h6 class="fw-bold">Key Features:</h6>
+            <ul class="list-unstyled small">
+              <li>
+                <i class="fas fa-check text-success me-2"></i>Evidence-based RAG
+                system
+              </li>
+              <li>
+                <i class="fas fa-check text-success me-2"></i>Chain-of-thought
+                reasoning
+              </li>
+              <li>
+                <i class="fas fa-check text-success me-2"></i>Safety disclaimers
+                & guidance
+              </li>
+            </ul>
+          </div>
 
-                        </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center">
-                            <button type="submit" id="submitBtn" class="btn btn-primary btn-lg">
-                                <i class="fas fa-paper-plane me-2"></i>Process with FAIR-Agent
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <div id="loadingDiv" class="alert alert-info mt-3" style="display: none;">
-                        <strong>Processing...</strong> Please wait.
-                    </div>
-                    
-                    <div id="responseDiv" class="mt-3" style="display: none;">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Response</h5>
-                            </div>
-                            <div class="card-body" id="responseBody">
-                                <!-- Response will be inserted here -->
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="debugLog" class="mt-3">
-                        <h6><i class="fas fa-bug me-2"></i>System Debug Log:</h6>
-                        <div id="logContent" class="bg-dark text-light p-3 rounded" style="max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.8em;">
-                            <div class="text-info">[System] FAIR-Agent initialized and ready...</div>
-                        </div>
-                    </div>
-                </div>
+          <div>
+            <h6 class="fw-bold">Evidence Sources:</h6>
+            <div class="mb-2">
+              <small class="text-muted"
+                >16 curated clinical & financial sources</small
+              >
             </div>
+            <div class="row">
+              <div class="col-6">
+                <small class="fw-bold text-success">Medical Sources</small>
+              </div>
+              <div class="col-6">
+                <small class="fw-bold text-info">Finance Sources</small>
+              </div>
+            </div>
+            <div class="mt-2">
+              <small class="text-muted">
+                <i class="fas fa-shield-alt text-success me-1"></i>Reliability:
+                85-98%
+                <i class="fas fa-calendar text-primary ms-2 me-1"></i>Updated:
+                Oct 2024
+              </small>
+            </div>
+          </div>
         </div>
-        
-        <div class="col-lg-4">
-            <!-- Project Information -->
-            <div class="card shadow-sm border-0 mb-4" style="background: linear-gradient(135deg, #f8fbff, #e8f4fd);">
-                <div class="card-header text-white" style="background: linear-gradient(135deg, #007bff, #0056b3);">
-                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Project Information</h5>
-                </div>
-                <div class="card-body">
-                    <h6 class="text-primary">CS668 Analytics Capstone Fall 2025</h6>
-                    <p class="small mb-3">Multi-agent LLM framework for finance and medicine with evidence-based reasoning.</p>
-                    
-                    <div class="mb-3">
-                        <h6 class="fw-bold">Key Features:</h6>
-                        <ul class="list-unstyled small">
-                            <li><i class="fas fa-check text-success me-2"></i>Evidence-based RAG system</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Chain-of-thought reasoning</li>
-                            <li><i class="fas fa-check text-success me-2"></i>Safety disclaimers & guidance</li>
-                        </ul>
-                    </div>
-                    
-                    <div>
-                        <h6 class="fw-bold">Evidence Sources:</h6>
-                        <div class="mb-2">
-                            <small class="text-muted">16 curated clinical & financial sources</small>
-                        </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <small class="fw-bold text-success">Medical Sources</small>
-                            </div>
-                            <div class="col-6">
-                                <small class="fw-bold text-info">Finance Sources</small>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <small class="text-muted">
-                                <i class="fas fa-shield-alt text-success me-1"></i>Reliability: 85-98% 
-                                <i class="fas fa-calendar text-primary ms-2 me-1"></i>Updated: Oct 2024
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Quick Examples -->
-            <div class="card shadow-sm border-0" style="background: linear-gradient(135deg, #f8fbff, #e8f4fd);">
-                <div class="card-header text-white" style="background: linear-gradient(135deg, #007bff, #0056b3);">
-                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Example Queries</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-2">
-                        <small class="fw-bold text-success">Finance:</small>
-                        <div class="small text-muted">Portfolio analysis, investment strategies</div>
-                    </div>
-                    <div>
-                        <small class="fw-bold text-info">Medicine:</small>
-                        <div class="small text-muted">Treatment protocols, drug interactions</div>
-                    </div>
-                </div>
-            </div>
+      </div>
+
+      <!-- Quick Examples -->
+      <div
+        class="card shadow-sm border-0"
+        style="background: linear-gradient(135deg, #f8fbff, #e8f4fd)"
+      >
+        <div
+          class="card-header text-white"
+          style="background: linear-gradient(135deg, #007bff, #0056b3)"
+        >
+          <h5 class="mb-0">
+            <i class="fas fa-lightbulb me-2"></i>Example Queries
+          </h5>
         </div>
+        <div class="card-body">
+          <div class="mb-2">
+            <small class="fw-bold text-success">Finance:</small>
+            <div class="small text-muted">
+              Portfolio analysis, investment strategies
+            </div>
+          </div>
+          <div>
+            <small class="fw-bold text-info">Medicine:</small>
+            <div class="small text-muted">
+              Treatment protocols, drug interactions
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <script>
-// Global error handler to catch and log JavaScript errors
-window.addEventListener('error', function(e) {
-    console.error('💥 JavaScript Error Caught:', {
-        message: e.message,
-        filename: e.filename,
-        lineno: e.lineno,
-        colno: e.colno,
-        error: e.error
+  // Global error handler to catch and log JavaScript errors
+  window.addEventListener("error", function (e) {
+    console.error("💥 JavaScript Error Caught:", {
+      message: e.message,
+      filename: e.filename,
+      lineno: e.lineno,
+      colno: e.colno,
+      error: e.error,
     });
-    
-    // Show user-friendly error message
-    if (e.message.includes('textContent')) {
-        console.error('🔍 This is the textContent error we are looking for!');
-        console.error('📍 Error location:', e.filename, 'line:', e.lineno);
-    }
-});
 
-function log(message, type = 'info') {
-    const logContent = document.getElementById('logContent');
+    // Show user-friendly error message
+    if (e.message.includes("textContent")) {
+      console.error("🔍 This is the textContent error we are looking for!");
+      console.error("📍 Error location:", e.filename, "line:", e.lineno);
+    }
+  });
+
+  function log(message, type = "info") {
+    const logContent = document.getElementById("logContent");
     const timestamp = new Date().toLocaleTimeString();
-    
+
     // Always log to console
     console.log(`[${timestamp}] ${message}`);
-    
+
     // Only update DOM if element exists
     if (logContent) {
-        const colors = {
-            'info': 'text-info',
-            'success': 'text-success', 
-            'error': 'text-danger',
-            'warning': 'text-warning',
-            'system': 'text-light'
-        };
-        const colorClass = colors[type] || 'text-light';
-        logContent.innerHTML += `<div class="${colorClass}">[${timestamp}] ${message}</div>`;
-        logContent.scrollTop = logContent.scrollHeight;
+      const colors = {
+        info: "text-info",
+        success: "text-success",
+        error: "text-danger",
+        warning: "text-warning",
+        system: "text-light",
+      };
+      const colorClass = colors[type] || "text-light";
+      logContent.innerHTML += `<div class="${colorClass}">[${timestamp}] ${message}</div>`;
+      logContent.scrollTop = logContent.scrollHeight;
     }
-}
+  }
 
-function detectDomain(query) {
-    const financeKeywords = ['financial', 'investment', 'portfolio', 'roi', 'revenue', 'profit', 'stock', 'bond', 'market', 'economy', 'budget', 'cost', 'income', 'expense', 'asset', 'liability', 'ratio', 'cash flow'];
-    const medicineKeywords = ['medical', 'health', 'disease', 'treatment', 'patient', 'diagnosis', 'symptom', 'medication', 'drug', 'therapy', 'clinical', 'hospital', 'doctor', 'medicine', 'pharmaceutical', 'dosage', 'side effect'];
-    
+  function detectDomain(query) {
+    const financeKeywords = [
+      "financial",
+      "investment",
+      "portfolio",
+      "roi",
+      "revenue",
+      "profit",
+      "stock",
+      "bond",
+      "market",
+      "economy",
+      "budget",
+      "cost",
+      "income",
+      "expense",
+      "asset",
+      "liability",
+      "ratio",
+      "cash flow",
+    ];
+    const medicineKeywords = [
+      "medical",
+      "health",
+      "disease",
+      "treatment",
+      "patient",
+      "diagnosis",
+      "symptom",
+      "medication",
+      "drug",
+      "therapy",
+      "clinical",
+      "hospital",
+      "doctor",
+      "medicine",
+      "pharmaceutical",
+      "dosage",
+      "side effect",
+    ];
+
     const queryLower = query.toLowerCase();
-    const financeMatches = financeKeywords.filter(keyword => queryLower.includes(keyword)).length;
-    const medicineMatches = medicineKeywords.filter(keyword => queryLower.includes(keyword)).length;
-    
-    if (financeMatches > medicineMatches && financeMatches > 0) {
-        return 'finance';
-    } else if (medicineMatches > financeMatches && medicineMatches > 0) {
-        return 'medicine';
-    } else {
-        return 'general';
-    }
-}
+    const financeMatches = financeKeywords.filter((keyword) =>
+      queryLower.includes(keyword)
+    ).length;
+    const medicineMatches = medicineKeywords.filter((keyword) =>
+      queryLower.includes(keyword)
+    ).length;
 
-// Helper function for safe DOM element access
-function safeGetElement(id) {
+    if (financeMatches > medicineMatches && financeMatches > 0) {
+      return "finance";
+    } else if (medicineMatches > financeMatches && medicineMatches > 0) {
+      return "medicine";
+    } else {
+      return "general";
+    }
+  }
+
+  // Helper function for safe DOM element access
+  function safeGetElement(id) {
     const element = document.getElementById(id);
     if (!element) {
-        console.warn(`Element with ID '${id}' not found`);
-        return null;
+      console.warn(`Element with ID '${id}' not found`);
+      return null;
     }
     return element;
-}
+  }
 
-// Helper function for safe element operations
-function safeElementOperation(elementId, operation, fallback) {
+  // Helper function for safe element operations
+  function safeElementOperation(elementId, operation, fallback) {
     try {
-        const element = safeGetElement(elementId);
-        if (element) {
-            return operation(element);
-        } else if (fallback) {
-            return fallback();
-        }
+      const element = safeGetElement(elementId);
+      if (element) {
+        return operation(element);
+      } else if (fallback) {
+        return fallback();
+      }
     } catch (error) {
-        console.error(`Error performing operation on element '${elementId}':`, error);
-        if (fallback) {
-            return fallback();
-        }
+      console.error(
+        `Error performing operation on element '${elementId}':`,
+        error
+      );
+      if (fallback) {
+        return fallback();
+      }
     }
     return null;
-}
+  }
 
-document.addEventListener('DOMContentLoaded', function() {
-    log('FAIR-Agent system initialized', 'system');
-    log('Multi-agent framework ready for finance and medicine queries', 'success');
-    
+  document.addEventListener("DOMContentLoaded", function () {
+    log("FAIR-Agent system initialized", "system");
+    log(
+      "Multi-agent framework ready for finance and medicine queries",
+      "success"
+    );
+
     // Model selector change handler - show download instructions for disabled models
-    safeElementOperation('modelSelect', function(modelSelect) {
-        modelSelect.addEventListener('change', function(e) {
+    safeElementOperation("modelSelect", function (modelSelect) {
+      modelSelect.addEventListener("change", function (e) {
         const selectedOption = e.target.options[e.target.selectedIndex];
         const modelValue = selectedOption.value;
-        
+
         // Check if the selected option is disabled (needs download)
         if (selectedOption.disabled) {
-            e.preventDefault();
-            
-            // Extract clean model name
-            const modelName = modelValue;
-            
-            // Show download modal/alert
-            const downloadCommand = `ollama pull ${modelName}`;
-            const message = `
+          e.preventDefault();
+
+          // Extract clean model name
+          const modelName = modelValue;
+
+          // Show download modal/alert
+          const downloadCommand = `ollama pull ${modelName}`;
+          const message = `
 ╔═══════════════════════════════════════════════════════════════╗
 ║                   MODEL DOWNLOAD REQUIRED                      ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -357,97 +562,147 @@ Current installed models:
 
 Would you like to copy the download command?
             `;
-            
-            if (confirm(message)) {
-                // Copy to clipboard
-                navigator.clipboard.writeText(downloadCommand).then(() => {
-                    alert('✅ Command copied to clipboard!\n\nOpen terminal and paste to download.');
-                    log(`Download command copied: ${downloadCommand}`, 'info');
-                }).catch(() => {
-                    alert('Command: ' + downloadCommand);
-                });
-            }
-            
-            // Revert selection to last valid model
-            e.target.value = 'llama3.2:latest';
-            return false;
-        }
-        
-        log(`Selected model: ${modelValue}`, 'info');
-        });
-    });
-    
-});
 
-// Update live metrics dashboard at the top of the page
-function updateLiveMetrics(data) {
-    if (!data || !data.fair_metrics) {
-        console.log('No FAIR metrics data to update');
-        return;
-    }
-    
-    // Show the metrics dashboard
-    safeElementOperation('metricsRow', function(metricsRow) {
-        metricsRow.style.display = 'block';
-    });
-    
-    // Calculate metrics
-    const faithfulness = Math.round((data.fair_metrics.faithfulness || 0) * 100);
-    const hallucinationReduction = Math.round((data.fair_metrics.hallucination_reduction || 0) * 100);
-    const interpretability = Math.round((data.fair_metrics.interpretability || 0) * 100);
-    const riskAwareness = Math.round((data.fair_metrics.risk_awareness || 0) * 100);
-    const calibrationError = Math.round((data.fair_metrics.calibration_error || 0) * 100);
-    const overallFair = Math.round((faithfulness + hallucinationReduction + interpretability + riskAwareness) / 4);
-    
-    console.log('🧠 Hallucination Reduction Percentage:', hallucinationReduction + '%');
-    console.log('📏 Calibration Error Percentage:', calibrationError + '%');
-    
-    // Update top dashboard metrics with safe checks
-    const updateElement = (id, value, suffix = '') => {
-        const element = document.getElementById(id);
-        if (element) {
-            try {
-                element.textContent = value + suffix;
-                
-                // Keep consistent white text styling on blue background
-                element.className = 'h4 mb-1 text-white';
-            } catch (error) {
-                console.warn('Could not update element ' + id + ':', error);
-            }
+          if (confirm(message)) {
+            // Copy to clipboard
+            navigator.clipboard
+              .writeText(downloadCommand)
+              .then(() => {
+                alert(
+                  "✅ Command copied to clipboard!\n\nOpen terminal and paste to download."
+                );
+                log(`Download command copied: ${downloadCommand}`, "info");
+              })
+              .catch(() => {
+                alert("Command: " + downloadCommand);
+              });
+          }
+
+          // Revert selection to last valid model
+          e.target.value = "llama3.2:latest";
+          return false;
         }
+
+        log(`Selected model: ${modelValue}`, "info");
+      });
+    });
+  });
+
+  // Update live metrics dashboard at the top of the page
+  function updateLiveMetrics(data) {
+    if (!data || !data.fair_metrics) {
+      console.log("No FAIR metrics data to update");
+      return;
+    }
+
+    // Show the metrics dashboard
+    safeElementOperation("metricsRow", function (metricsRow) {
+      metricsRow.style.display = "block";
+    });
+
+    // Calculate metrics
+    const faithfulness = Math.round(
+      (data.fair_metrics.faithfulness || 0) * 100
+    );
+    const hallucinationReduction = Math.round(
+      (data.fair_metrics.hallucination_reduction || 0) * 100
+    );
+    const interpretability = Math.round(
+      (data.fair_metrics.interpretability || 0) * 100
+    );
+    const riskAwareness = Math.round(
+      (data.fair_metrics.risk_awareness || 0) * 100
+    );
+    const calibrationError = Math.round(
+      (data.fair_metrics.calibration_error || 0) * 100
+    );
+    const overallFair = Math.round(
+      (faithfulness +
+        hallucinationReduction +
+        interpretability +
+        riskAwareness) /
+        4
+    );
+
+    console.log(
+      "🧠 Hallucination Reduction Percentage:",
+      hallucinationReduction + "%"
+    );
+    console.log("📏 Calibration Error Percentage:", calibrationError + "%");
+
+    // Update top dashboard metrics with safe checks
+    const updateElement = (id, value, suffix = "") => {
+      const element = document.getElementById(id);
+      if (element) {
+        try {
+          element.textContent = value + suffix;
+
+          // Keep consistent white text styling on blue background
+          element.className = "h4 mb-1 text-white";
+        } catch (error) {
+          console.warn("Could not update element " + id + ":", error);
+        }
+      }
     };
-    
+
     // Update all metrics
-    updateElement('summary-faithfulness', faithfulness, '%');
-    updateElement('summary-hallucination', hallucinationReduction, '%');
-    updateElement('summary-interpretability', interpretability, '%');
-    updateElement('summary-risk', riskAwareness > 100 ? '100+' : riskAwareness, '%');
-    updateElement('summary-calibration', calibrationError, '%');
-    updateElement('summary-overall', overallFair, '%');
-    
+    updateElement("summary-faithfulness", faithfulness, "%");
+    updateElement("summary-hallucination", hallucinationReduction, "%");
+    updateElement("summary-interpretability", interpretability, "%");
+    updateElement(
+      "summary-risk",
+      riskAwareness > 100 ? "100+" : riskAwareness,
+      "%"
+    );
+    updateElement("summary-calibration", calibrationError, "%");
+    updateElement("summary-overall", overallFair, "%");
+
     // Update response time
     if (data.processing_time) {
-        updateElement('summary-response-time', data.processing_time.toFixed(2), 's');
+      updateElement(
+        "summary-response-time",
+        data.processing_time.toFixed(2),
+        "s"
+      );
     }
-    
-    log(`Live Metrics → F:${faithfulness}% H:${hallucinationReduction}% I:${interpretability}% R:${riskAwareness}% C:${calibrationError}% Overall:${overallFair}%`, 'info');
-}
 
-// Safe metrics display function - adds metrics to response instead of separate elements
-function displayMetricsSafely(data) {
+    log(
+      `Live Metrics → F:${faithfulness}% H:${hallucinationReduction}% I:${interpretability}% R:${riskAwareness}% C:${calibrationError}% Overall:${overallFair}%`,
+      "info"
+    );
+  }
+
+  // Safe metrics display function - adds metrics to response instead of separate elements
+  function displayMetricsSafely(data) {
     if (!data || !data.fair_metrics) {
-        console.log('No FAIR metrics data to display');
-        return;
+      console.log("No FAIR metrics data to display");
+      return;
     }
-    
+
     // Calculate metrics safely
-    const faithfulness = Math.round((data.fair_metrics.faithfulness || 0) * 100);
-    const hallucinationReduction = Math.round((data.fair_metrics.hallucination_reduction || 0) * 100);
-    const interpretability = Math.round((data.fair_metrics.interpretability || 0) * 100);
-    const riskAwareness = Math.round((data.fair_metrics.risk_awareness || 0) * 100);
-    const calibrationError = Math.round((data.fair_metrics.calibration_error || 0) * 100);
-    const overallFair = Math.round((faithfulness + hallucinationReduction + interpretability + riskAwareness) / 4);
-    
+    const faithfulness = Math.round(
+      (data.fair_metrics.faithfulness || 0) * 100
+    );
+    const hallucinationReduction = Math.round(
+      (data.fair_metrics.hallucination_reduction || 0) * 100
+    );
+    const interpretability = Math.round(
+      (data.fair_metrics.interpretability || 0) * 100
+    );
+    const riskAwareness = Math.round(
+      (data.fair_metrics.risk_awareness || 0) * 100
+    );
+    const calibrationError = Math.round(
+      (data.fair_metrics.calibration_error || 0) * 100
+    );
+    const overallFair = Math.round(
+      (faithfulness +
+        hallucinationReduction +
+        interpretability +
+        riskAwareness) /
+        4
+    );
+
     // Create metrics display HTML
     const metricsHtml = `
         <div class="mt-4 p-3 border rounded" style="background: linear-gradient(135deg, #f8fbff, #e8f4fd);">
@@ -457,7 +712,13 @@ function displayMetricsSafely(data) {
                     <div class="metric-item p-2 rounded" style="background: white; border: 1px solid #e3f2fd;">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="fw-bold">Faithfulness</span>
-                            <span class="badge ${faithfulness >= 70 ? 'bg-success' : faithfulness >= 50 ? 'bg-warning' : 'bg-danger'}">${faithfulness}%</span>
+                            <span class="badge ${
+                              faithfulness >= 70
+                                ? "bg-success"
+                                : faithfulness >= 50
+                                ? "bg-warning"
+                                : "bg-danger"
+                            }">${faithfulness}%</span>
                         </div>
                         <small class="text-muted">Evidence-based accuracy</small>
                     </div>
@@ -466,7 +727,13 @@ function displayMetricsSafely(data) {
                     <div class="metric-item p-2 rounded" style="background: white; border: 1px solid #e3f2fd;">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="fw-bold">Hallucination Reduction</span>
-                            <span class="badge ${hallucinationReduction >= 30 ? 'bg-success' : hallucinationReduction >= 20 ? 'bg-warning' : 'bg-danger'}">${hallucinationReduction}%</span>
+                            <span class="badge ${
+                              hallucinationReduction >= 30
+                                ? "bg-success"
+                                : hallucinationReduction >= 20
+                                ? "bg-warning"
+                                : "bg-danger"
+                            }">${hallucinationReduction}%</span>
                         </div>
                         <small class="text-muted">Reduced false information</small>
                     </div>
@@ -475,7 +742,13 @@ function displayMetricsSafely(data) {
                     <div class="metric-item p-2 rounded" style="background: white; border: 1px solid #e3f2fd;">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="fw-bold">Interpretability</span>
-                            <span class="badge ${interpretability >= 70 ? 'bg-success' : interpretability >= 50 ? 'bg-warning' : 'bg-danger'}">${interpretability}%</span>
+                            <span class="badge ${
+                              interpretability >= 70
+                                ? "bg-success"
+                                : interpretability >= 50
+                                ? "bg-warning"
+                                : "bg-danger"
+                            }">${interpretability}%</span>
                         </div>
                         <small class="text-muted">Explanation clarity</small>
                     </div>
@@ -484,7 +757,15 @@ function displayMetricsSafely(data) {
                     <div class="metric-item p-2 rounded" style="background: white; border: 1px solid #e3f2fd;">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="fw-bold">Risk Awareness</span>
-                            <span class="badge ${riskAwareness >= 70 ? 'bg-success' : riskAwareness >= 50 ? 'bg-warning' : 'bg-danger'}">${riskAwareness > 100 ? '100+' : riskAwareness}%</span>
+                            <span class="badge ${
+                              riskAwareness >= 70
+                                ? "bg-success"
+                                : riskAwareness >= 50
+                                ? "bg-warning"
+                                : "bg-danger"
+                            }">${
+      riskAwareness > 100 ? "100+" : riskAwareness
+    }%</span>
                         </div>
                         <small class="text-muted">Safety considerations</small>
                     </div>
@@ -493,7 +774,13 @@ function displayMetricsSafely(data) {
                     <div class="metric-item p-2 rounded" style="background: white; border: 1px solid #e3f2fd;">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="fw-bold">Calibration Error</span>
-                            <span class="badge ${calibrationError < 10 ? 'bg-success' : calibrationError < 20 ? 'bg-warning' : 'bg-danger'}">${calibrationError}%</span>
+                            <span class="badge ${
+                              calibrationError < 10
+                                ? "bg-success"
+                                : calibrationError < 20
+                                ? "bg-warning"
+                                : "bg-danger"
+                            }">${calibrationError}%</span>
                         </div>
                         <small class="text-muted">Confidence accuracy (lower is better)</small>
                     </div>
@@ -509,14 +796,18 @@ function displayMetricsSafely(data) {
                 </div>
             </div>
             
-            ${data.processing_time ? `
+            ${
+              data.processing_time
+                ? `
                 <div class="mt-3 text-center">
                     <small class="text-primary">
                         <i class="fas fa-clock me-1"></i>
                         Processing Time: ${data.processing_time.toFixed(2)}s
                     </small>
                 </div>
-            ` : ''}
+            `
+                : ""
+            }
             
             <div class="mt-3 text-center">
                 <small class="text-primary">
@@ -526,54 +817,58 @@ function displayMetricsSafely(data) {
             </div>
         </div>
     `;
-    
-    // Find response body and append metrics safely
-    safeElementOperation('responseBody', function(responseBody) {
-        responseBody.innerHTML += metricsHtml;
-    }, function() {
-        console.warn('responseBody element not found, metrics display skipped');
-    });
-    
-    // Log metrics for debugging
-    console.log('📊 FAIR Metrics:', {
-        faithfulness: faithfulness + '%',
-        hallucinationReduction: hallucinationReduction + '%', 
-        interpretability: interpretability + '%',
-        riskAwareness: (riskAwareness > 100 ? '100+' : riskAwareness) + '%',
-        calibrationError: calibrationError + '%',
-        overall: overallFair + '%'
-    });
-}
 
-// WORKING FORM HANDLER - Simple and reliable
-document.addEventListener('DOMContentLoaded', function() {
-    safeElementOperation('queryForm', function(form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            log('Form submission started', 'info');
-            
-            const queryInput = safeGetElement('queryInput');
-            const modelSelect = safeGetElement('modelSelect');
-            
-            if (!queryInput || !modelSelect) {
-                alert('Form elements not found. Please refresh the page.');
-                return;
-            }
-            
-            const query = queryInput.value.trim();
-            if (!query) {
-                alert('Please enter a query');
-                return;
-            }
-            
-            // Get selected model
-            const selectedModel = modelSelect.value;
-            log('Query: ' + query, 'info');
-            log('Selected Model: ' + selectedModel, 'info');
-            
-            // Show loading safely
-            safeElementOperation('loadingDiv', function(loadingDiv) {
-                loadingDiv.innerHTML = `<div class="d-flex align-items-center">
+    // Find response body and append metrics safely
+    safeElementOperation(
+      "responseBody",
+      function (responseBody) {
+        responseBody.innerHTML += metricsHtml;
+      },
+      function () {
+        console.warn("responseBody element not found, metrics display skipped");
+      }
+    );
+
+    // Log metrics for debugging
+    console.log("📊 FAIR Metrics:", {
+      faithfulness: faithfulness + "%",
+      hallucinationReduction: hallucinationReduction + "%",
+      interpretability: interpretability + "%",
+      riskAwareness: (riskAwareness > 100 ? "100+" : riskAwareness) + "%",
+      calibrationError: calibrationError + "%",
+      overall: overallFair + "%",
+    });
+  }
+
+  // WORKING FORM HANDLER - Simple and reliable
+  document.addEventListener("DOMContentLoaded", function () {
+    safeElementOperation("queryForm", function (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        log("Form submission started", "info");
+
+        const queryInput = safeGetElement("queryInput");
+        const modelSelect = safeGetElement("modelSelect");
+
+        if (!queryInput || !modelSelect) {
+          alert("Form elements not found. Please refresh the page.");
+          return;
+        }
+
+        const query = queryInput.value.trim();
+        if (!query) {
+          alert("Please enter a query");
+          return;
+        }
+
+        // Get selected model
+        const selectedModel = modelSelect.value;
+        log("Query: " + query, "info");
+        log("Selected Model: " + selectedModel, "info");
+
+        // Show loading safely
+        safeElementOperation("loadingDiv", function (loadingDiv) {
+          loadingDiv.innerHTML = `<div class="d-flex align-items-center">
                     <div class="spinner-border text-primary me-3" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
@@ -582,81 +877,89 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="small">Please wait while FAIR-Agent analyzes your query</div>
                     </div>
                 </div>`;
-                loadingDiv.style.display = 'block';
-            });
-            
-            const responseDiv = safeGetElement('responseDiv');
-            const submitBtn = safeGetElement('submitBtn');
-            if (responseDiv) responseDiv.style.display = 'none';
-            if (submitBtn) submitBtn.disabled = true;
-            
-            // Get CSRF token (not required for this API endpoint)
-            // const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            
-            log('Sending API request...', 'info');
-            
-            // Add timeout to the fetch request
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
-            
-            fetch('/api/query/process/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                    // 'X-CSRFToken': csrfToken  // Not needed for exempt endpoint
-                },
-                body: JSON.stringify({ 
-                    query: query,
-                    model: selectedModel
-                }),
-                signal: controller.signal
-            })
-            .then(response => {
-                clearTimeout(timeoutId);
-                log('Response received: ' + response.status, 'success');
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                log('Data parsed successfully', 'success');
-                console.log('Received data:', data); // Debug log
-                
-                // Validate data structure
-                if (!data || !data.answer) {
-                    throw new Error('Invalid response format from server');
-                }
-                
-                // Hide loading
-                if (loadingDiv) loadingDiv.style.display = 'none';
-                if (submitBtn) submitBtn.disabled = false;
-                
-                // Update FAIR metrics in both dashboard and response
-                if (data.fair_metrics) {
-                    try {
-                        updateLiveMetrics(data);
-                        displayMetricsSafely(data);
-                        log('FAIR metrics updated successfully', 'success');
-                    } catch (error) {
-                        console.warn('Could not update all metrics:', error);
-                        log('Metrics calculation completed (some display issues)', 'warning');
-                    }
-                }
-                
-                // Show clean response without duplicate metrics
-                safeElementOperation('responseBody', function(responseBody) {
-                    // Format the answer with better styling
-                    const formattedAnswer = data.formatted_answer || data.answer || 'No response generated';
-                    const modelUsed = data.model_used || selectedModel || 'Unknown';
-                    
-                    responseBody.innerHTML = `
+          loadingDiv.style.display = "block";
+        });
+
+        const responseDiv = safeGetElement("responseDiv");
+        const submitBtn = safeGetElement("submitBtn");
+        if (responseDiv) responseDiv.style.display = "none";
+        if (submitBtn) submitBtn.disabled = true;
+
+        // Get CSRF token (not required for this API endpoint)
+        // const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        log("Sending API request...", "info");
+
+        // Add timeout to the fetch request
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout for fine-tuned model loading
+
+        fetch("/api/query/process/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // 'X-CSRFToken': csrfToken  // Not needed for exempt endpoint
+          },
+          body: JSON.stringify({
+            query: query,
+            model: selectedModel,
+          }),
+          signal: controller.signal,
+        })
+          .then((response) => {
+            clearTimeout(timeoutId);
+            log("Response received: " + response.status, "success");
+            if (!response.ok) {
+              throw new Error("HTTP " + response.status);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            log("Data parsed successfully", "success");
+            console.log("Received data:", data); // Debug log
+
+            // Validate data structure
+            if (!data || !data.answer) {
+              throw new Error("Invalid response format from server");
+            }
+
+            // Hide loading
+            if (loadingDiv) loadingDiv.style.display = "none";
+            if (submitBtn) submitBtn.disabled = false;
+
+            // Update FAIR metrics in both dashboard and response
+            if (data.fair_metrics) {
+              try {
+                updateLiveMetrics(data);
+                displayMetricsSafely(data);
+                log("FAIR metrics updated successfully", "success");
+              } catch (error) {
+                console.warn("Could not update all metrics:", error);
+                log(
+                  "Metrics calculation completed (some display issues)",
+                  "warning"
+                );
+              }
+            }
+
+            // Show clean response without duplicate metrics
+            safeElementOperation("responseBody", function (responseBody) {
+              // Format the answer with better styling
+              const formattedAnswer =
+                data.formatted_answer || data.answer || "No response generated";
+              const modelUsed = data.model_used || selectedModel || "Unknown";
+
+              responseBody.innerHTML = `
                         <div class="alert alert-success border-0 shadow-sm mb-3">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-check-circle me-3 fs-4"></i>
                                 <div>
                                     <strong>FAIR-Agent Analysis Complete</strong>
-                                    <div class="small">Query ID: ${data.query_id || 'N/A'} • Model: ${modelUsed} • Processing Time: ${(data.processing_time || 0).toFixed(2)}s</div>
+                                    <div class="small">Query ID: ${
+                                      data.query_id || "N/A"
+                                    } • Model: ${modelUsed} • Processing Time: ${(
+                data.processing_time || 0
+              ).toFixed(2)}s</div>
                                 </div>
                             </div>
                         </div>
@@ -669,11 +972,27 @@ document.addEventListener('DOMContentLoaded', function() {
                                         FAIR-Agent Response
                                     </h6>
                                     <div>
-                                        <span class="badge bg-${data.domain === 'finance' ? 'success' : data.domain === 'medical' ? 'info' : 'secondary'}">
-                                            ${(data.domain || 'general').toUpperCase()}
+                                        <span class="badge bg-${
+                                          data.domain === "finance"
+                                            ? "success"
+                                            : data.domain === "medical"
+                                            ? "info"
+                                            : "secondary"
+                                        }">
+                                            ${(
+                                              data.domain || "general"
+                                            ).toUpperCase()}
                                         </span>
-                                        <span class="badge bg-${data.confidence >= 0.7 ? 'success' : data.confidence >= 0.5 ? 'warning' : 'danger'} ms-2">
-                                            ${Math.round((data.confidence || 0) * 100)}% Confidence
+                                        <span class="badge bg-${
+                                          data.confidence >= 0.7
+                                            ? "success"
+                                            : data.confidence >= 0.5
+                                            ? "warning"
+                                            : "danger"
+                                        } ms-2">
+                                            ${Math.round(
+                                              (data.confidence || 0) * 100
+                                            )}% Confidence
                                         </span>
                                     </div>
                                 </div>
@@ -683,36 +1002,75 @@ document.addEventListener('DOMContentLoaded', function() {
                                     ${formattedAnswer}
                                 </div>
                                 
-                                ${data.fair_metrics ? `
+                                ${
+                                  data.fair_metrics
+                                    ? `
                                 <div class="mt-3 pt-3 border-top">
                                     <h6 class="text-muted mb-2"><i class="fas fa-chart-line me-2"></i>Enhancement Boosts Applied:</h6>
                                     <div class="row g-2">
                                         <div class="col-6 col-md-3">
                                             <div class="text-center p-2 rounded" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb);">
                                                 <div class="small" style="color: #0d47a1;">Safety</div>
-                                                <div class="fw-bold text-success">+${(data.fair_metrics.detailed_safety?.safety_boost || 0.20).toFixed(2)}</div>
+                                                <div class="fw-bold text-success">+${(
+                                                  data.fair_metrics
+                                                    .detailed_safety
+                                                    ?.safety_boost || 0.2
+                                                ).toFixed(2)}</div>
                                             </div>
                                         </div>
                                         <div class="col-6 col-md-3">
                                             <div class="text-center p-2 rounded" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb);">
                                                 <div class="small" style="color: #0d47a1;">Evidence</div>
-                                                <div class="fw-bold ${data.fair_metrics.detailed_faithfulness?.evidence_boost > 0 ? 'text-success' : 'text-secondary'}">
-                                                    ${data.fair_metrics.detailed_faithfulness?.evidence_boost ? '+' + data.fair_metrics.detailed_faithfulness.evidence_boost.toFixed(2) : '+0.00'}
+                                                <div class="fw-bold ${
+                                                  data.fair_metrics
+                                                    .detailed_faithfulness
+                                                    ?.evidence_boost > 0
+                                                    ? "text-success"
+                                                    : "text-secondary"
+                                                }">
+                                                    ${
+                                                      data.fair_metrics
+                                                        .detailed_faithfulness
+                                                        ?.evidence_boost
+                                                        ? "+" +
+                                                          data.fair_metrics.detailed_faithfulness.evidence_boost.toFixed(
+                                                            2
+                                                          )
+                                                        : "+0.00"
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-6 col-md-3">
                                             <div class="text-center p-2 rounded" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb);">
                                                 <div class="small" style="color: #0d47a1;">Reasoning</div>
-                                                <div class="fw-bold ${data.fair_metrics.detailed_interpretability?.reasoning_boost > 0 ? 'text-success' : 'text-secondary'}">
-                                                    ${data.fair_metrics.detailed_interpretability?.reasoning_boost ? '+' + data.fair_metrics.detailed_interpretability.reasoning_boost.toFixed(2) : '+0.00'}
+                                                <div class="fw-bold ${
+                                                  data.fair_metrics
+                                                    .detailed_interpretability
+                                                    ?.reasoning_boost > 0
+                                                    ? "text-success"
+                                                    : "text-secondary"
+                                                }">
+                                                    ${
+                                                      data.fair_metrics
+                                                        .detailed_interpretability
+                                                        ?.reasoning_boost
+                                                        ? "+" +
+                                                          data.fair_metrics.detailed_interpretability.reasoning_boost.toFixed(
+                                                            2
+                                                          )
+                                                        : "+0.00"
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-6 col-md-3">
                                             <div class="text-center p-2 rounded" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb);">
                                                 <div class="small" style="color: #0d47a1;">Internet</div>
-                                                <div class="fw-bold text-info">+${(data.fair_metrics.internet_boost || 0.05).toFixed(2)}</div>
+                                                <div class="fw-bold text-info">+${(
+                                                  data.fair_metrics
+                                                    .internet_boost || 0.05
+                                                ).toFixed(2)}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -723,34 +1081,38 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </small>
                                     </div>
                                 </div>
-                                ` : ''}
+                                `
+                                    : ""
+                                }
                             </div>
                         </div>
                     `;
-                });
-                
-                if (responseDiv) responseDiv.style.display = 'block';
-                log('Results displayed successfully', 'success');
-            })
-            .catch(error => {
-                clearTimeout(timeoutId);
-                log('ERROR: ' + error.message, 'error');
-                
-                // Hide loading
-                if (loadingDiv) loadingDiv.style.display = 'none';
-                if (submitBtn) submitBtn.disabled = false;
-                
-                // Determine error type
-                let errorMessage = error.message;
-                if (error.name === 'AbortError') {
-                    errorMessage = 'Request timeout - The query is taking too long to process. Please try a simpler query.';
-                } else if (error.message.includes('Failed to fetch')) {
-                    errorMessage = 'Network error - Unable to connect to server. Please check your connection.';
-                }
-                
-                // Show error safely
-                safeElementOperation('responseBody', function(responseBody) {
-                    responseBody.innerHTML = `
+            });
+
+            if (responseDiv) responseDiv.style.display = "block";
+            log("Results displayed successfully", "success");
+          })
+          .catch((error) => {
+            clearTimeout(timeoutId);
+            log("ERROR: " + error.message, "error");
+
+            // Hide loading
+            if (loadingDiv) loadingDiv.style.display = "none";
+            if (submitBtn) submitBtn.disabled = false;
+
+            // Determine error type
+            let errorMessage = error.message;
+            if (error.name === "AbortError") {
+              errorMessage =
+                "Request timeout - The query is taking too long to process. Please try a simpler query.";
+            } else if (error.message.includes("Failed to fetch")) {
+              errorMessage =
+                "Network error - Unable to connect to server. Please check your connection.";
+            }
+
+            // Show error safely
+            safeElementOperation("responseBody", function (responseBody) {
+              responseBody.innerHTML = `
                         <div class="alert alert-danger">
                             <strong>Error:</strong> ${errorMessage}
                             <div class="small mt-2">
@@ -763,118 +1125,130 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
                         </div>
                     `;
-                });
-                if (responseDiv) responseDiv.style.display = 'block';
             });
-        });
+            if (responseDiv) responseDiv.style.display = "block";
+          });
+      });
     });
-});
+  });
 </script>
 
 <style>
-/* Custom styles for FAIR-Agent interface */
-body {
+  /* Custom styles for FAIR-Agent interface */
+  body {
     background: linear-gradient(135deg, #e3f2fd, #f0f8ff) !important;
     min-height: 100vh;
-}
+  }
 
-.metric-card {
+  .metric-card {
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background: linear-gradient(135deg, #e3f2fd, #bbdefb) !important;
-}
+  }
 
-.metric-card:hover {
+  .metric-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
 
-.border-start.border-4 {
+  .border-start.border-4 {
     border-left-width: 4px !important;
-}
+  }
 
-.card-header {
+  .card-header {
     border-bottom: none !important;
-}
+  }
 
-.gradient-primary {
+  .gradient-primary {
     background: linear-gradient(135deg, #007bff, #6610f2) !important;
-}
+  }
 
-.response-content {
-    font-family: 'Georgia', serif;
+  .response-content {
+    font-family: "Georgia", serif;
     line-height: 1.8;
     font-size: 1.05em;
     color: #333;
-}
+  }
 
-.response-content p {
+  .response-content p {
     margin-bottom: 1rem;
-}
+  }
 
-.response-content strong {
+  .response-content strong {
     color: #000;
-}
+  }
 
-.response-content ul, .response-content ol {
+  .response-content ul,
+  .response-content ol {
     margin-left: 20px;
     margin-bottom: 1rem;
-}
+  }
 
-.badge.fs-6 {
+  .badge.fs-6 {
     font-size: 0.9rem !important;
     padding: 0.5rem 0.75rem;
-}
+  }
 
-/* Model selector styling */
-#modelSelect {
+  /* Model selector styling */
+  #modelSelect {
     border: 2px solid #007bff;
     transition: all 0.3s ease;
-}
+  }
 
-#modelSelect:focus {
+  #modelSelect:focus {
     border-color: #0056b3;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
+  }
 
-/* Spinner animation */
-.spinner-border {
+  /* Spinner animation */
+  .spinner-border {
     width: 2rem;
     height: 2rem;
     border-width: 0.3rem;
-}
+  }
 
-/* Agent status indicators */
-.agent-status {
+  /* Agent status indicators */
+  .agent-status {
     position: relative;
     overflow: hidden;
-}
+  }
 
-.agent-status::before {
-    content: '';
+  .agent-status::before {
+    content: "";
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
     transition: left 0.5s;
-}
+  }
 
-.agent-status:hover::before {
+  .agent-status:hover::before {
     left: 100%;
-}
+  }
 
-/* Loading animation for agent cards */
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; }
-    100% { opacity: 1; }
-}
+  /* Loading animation for agent cards */
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 
-.agent-active {
+  .agent-active {
     animation: pulse 2s infinite;
-}
+  }
 </style>
 
 {% endblock %}
